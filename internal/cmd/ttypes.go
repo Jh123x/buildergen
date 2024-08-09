@@ -7,6 +7,8 @@ import (
 	"github.com/Jh123x/buildergen/internal/utils"
 )
 
+//go:generate buildergen -src=./ttypes.go -name Config
+
 type Config struct {
 	Source      string
 	Destination string
@@ -21,6 +23,10 @@ func NewConfig(src, dst, pkg, name *string) (*Config, error) {
 
 	if utils.IsNilOrEmpty(name) {
 		return nil, consts.ErrNameNotFound
+	}
+
+	if !strings.HasSuffix(*src, ".go") {
+		return nil, consts.ErrNotGoFile
 	}
 
 	if utils.IsNilOrEmpty(dst) {

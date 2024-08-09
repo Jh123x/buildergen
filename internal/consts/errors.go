@@ -7,6 +7,7 @@ const (
 	ErrMsgNoStructsFound = "source file has no structs"
 	ErrMsgNameNotFound   = "name is required"
 	ErrMsgTypeNotFound   = "type not found for field"
+	ErrMsgNotGoFile      = "source is not a valid go file"
 )
 
 var (
@@ -14,4 +15,5 @@ var (
 	ErrNoStructsFound = errors.New(ErrMsgNoStructsFound)
 	ErrNameNotFound   = errors.New(ErrMsgNameNotFound)
 	ErrTypeNotfound   = errors.New(ErrMsgTypeNotFound)
+	ErrNotGoFile      = errors.New(ErrMsgNotGoFile)
 )
