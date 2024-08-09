@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/Jh123x/buildergen/internal/consts"
+	"github.com/Jh123x/buildergen/internal/utils"
 )
 
 type Field struct {
@@ -26,10 +27,13 @@ func (s *StructGenHelper) ToSource() string {
 	srcBuilder.WriteString(consts.BUILD_PACKAGE)
 	srcBuilder.WriteString(" ")
 	srcBuilder.WriteString(s.Package)
+
 	srcBuilder.WriteString("\n\nimport (\n")
 	for _, importVal := range s.Imports {
 		srcBuilder.WriteString(importVal)
+		srcBuilder.WriteString("\n")
 	}
+
 	srcBuilder.WriteString(")\n\ntype ")
 	srcBuilder.WriteString(s.Name)
 	srcBuilder.WriteString("Builder struct {\n")
@@ -80,13 +84,18 @@ func (s *StructGenHelper) genNewMethod() string {
 }
 
 func (s *StructGenHelper) genMethod(field *Field) string {
+	paramName := strings.ToLower(field.Name)
+	if utils.Contains(consts.Keywords, paramName) {
+		paramName += "_"
+	}
+
 	builder := strings.Builder{}
 	builder.WriteString("func (b *")
 	builder.WriteString(s.Name)
 	builder.WriteString("Builder) With")
 	builder.WriteString(field.Name)
 	builder.WriteString("(")
-	builder.WriteString(strings.ToLower(field.Name))
+	builder.WriteString(paramName)
 	builder.WriteString(" ")
 	builder.WriteString(field.Type)
 	builder.WriteString(") *")
@@ -94,7 +103,7 @@ func (s *StructGenHelper) genMethod(field *Field) string {
 	builder.WriteString("Builder {\n\tb.")
 	builder.WriteString(field.Name)
 	builder.WriteString(" = ")
-	builder.WriteString(strings.ToLower(field.Name))
+	builder.WriteString(paramName)
 	builder.WriteString("\nreturn b\n}\n\n")
 
 	return builder.String()

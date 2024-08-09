@@ -18,3 +18,13 @@ func Any[T any](predicate func(T) bool, data ...T) bool {
 
 	return false
 }
+
+func Contains[T comparable](arr []T, val T) bool {
+	for _, v := range arr {
+		if v == val {
+			return true
+		}
+	}
+
+	return false
+}
