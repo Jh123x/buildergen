@@ -10,6 +10,15 @@ import (
 
 	"github.com/Jh123x/buildergen/internal/cmd"
 	"github.com/Jh123x/buildergen/internal/consts"
+	"golang.org/x/tools/imports"
+)
+
+var (
+	importOptions = &imports.Options{
+		FormatOnly: false,
+		TabIndent:  true,
+		Comments:   true,
+	}
 )
 
 func GenerateBuilder(tSet *token.FileSet, typeSpec *ast.TypeSpec, imports []string, config *cmd.Config) error {
@@ -50,6 +59,12 @@ func FormatFile(fileName string) error {
 	}
 
 	result, err := format.Source(res)
+	if err != nil {
+		return err
+	}
+
+	result, err = imports.Process("", result, importOptions)
+
 	if err != nil {
 		return err
 	}
