@@ -55,25 +55,25 @@ func parseData(imports []*ast.ImportSpec) []string {
 	return result
 }
 
-// findRequestedStructType searches the input file for a struct type with name
-// structName. If found, return the type spec, true; else return nil, false.
 func findRequestedStructType(f *ast.File, structName string) (*ast.TypeSpec, bool) {
 	for _, decl := range f.Decls {
-		switch genDecl := decl.(type) {
-		case *ast.GenDecl:
-			if genDecl.Tok != token.TYPE && genDecl.Tok != token.IMPORT {
+		genDecl, ok := decl.(*ast.GenDecl)
+		if !ok {
+			continue
+		}
+
+		if genDecl.Tok != token.TYPE && genDecl.Tok != token.IMPORT {
+			continue
+		}
+
+		for _, spec := range genDecl.Specs {
+			typeSpec, ok := spec.(*ast.TypeSpec)
+			if !ok {
 				continue
 			}
 
-			for _, spec := range genDecl.Specs {
-				typeSpec, ok := spec.(*ast.TypeSpec)
-				if !ok {
-					continue
-				}
-
-				if _, ok := typeSpec.Type.(*ast.StructType); ok && typeSpec.Name.Name == structName {
-					return typeSpec, true
-				}
+			if _, ok := typeSpec.Type.(*ast.StructType); ok && typeSpec.Name.Name == structName {
+				return typeSpec, true
 			}
 		}
 	}
