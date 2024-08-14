@@ -16,6 +16,8 @@ type Config struct {
 	Name        string
 }
 
+// NewConfig creates a new config with the given arguments.
+// It also initializes the default values config arguments.
 func NewConfig(src, dst, pkg, name *string) (*Config, error) {
 	if utils.IsNilOrEmpty(src) {
 		return nil, consts.ErrSrcNotFound

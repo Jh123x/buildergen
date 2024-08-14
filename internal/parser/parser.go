@@ -11,6 +11,7 @@ import (
 	"github.com/Jh123x/buildergen/internal/generation"
 )
 
+// ParseBuilderFile creates a file based on config and returns the first encountered error.
 func ParseBuilderFile(config *cmd.Config) error {
 	fset := token.NewFileSet()
 	astFile, err := parser.ParseFile(fset, config.Source, nil, 0)

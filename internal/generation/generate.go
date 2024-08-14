@@ -21,6 +21,7 @@ var (
 	}
 )
 
+// GenerateBuilder generates the builder source code based on the given arguments.
 func GenerateBuilder(tSet *token.FileSet, typeSpec *ast.TypeSpec, imports []string, config *cmd.Config) error {
 	structHelper := &StructGenHelper{
 		Name:    config.Name,
@@ -52,6 +53,7 @@ func GenerateBuilder(tSet *token.FileSet, typeSpec *ast.TypeSpec, imports []stri
 	return nil
 }
 
+// FormatFile formats and optimize imports of the file at fileName.
 func FormatFile(fileName string) error {
 	res, err := os.ReadFile(fileName)
 	if err != nil {
