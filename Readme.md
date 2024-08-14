@@ -4,6 +4,7 @@ BuilderGen is a tool used for generating builders for Golang `structs`.
 
 - [Commands](./docs/command "Documentation for Commands")
 - [Usage](./docs/usage "Documentation for Usage")
+- [Benchmark](./docs/benchmarks "Benchmarks from different versions")
 
 ## QuickStart
 
