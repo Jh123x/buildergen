@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
@@ -17,14 +18,14 @@ func main() {
 	flag.Parse()
 
 	if utils.IsNilOrEmpty(src) {
-		cmd.GetUsage()
+		cmd.GetUsage(fmt.Printf)
 		os.Exit(1)
 		return
 	}
 
 	config, err := cmd.NewConfig(src, dest, pkg, name)
 	if err != nil {
-		cmd.GetUsage()
+		cmd.GetUsage(fmt.Printf)
 		return
 	}
 

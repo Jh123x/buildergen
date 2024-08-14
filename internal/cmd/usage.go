@@ -2,16 +2,18 @@ package cmd
 
 import (
 	"flag"
-	"fmt"
 )
 
+const usageFormat = `BuilderGen is a builder code generation library to easily create builders around your struct\nUsage Example: buildergen -src ./examples/test.go -name Person\n`
+
 // GetUsage prints the help message for BuilderGen.
-func GetUsage() {
-	fmt.Printf("BuilderGen is a builder code generation library to easily create builders around your struct\n")
-	fmt.Printf("Usage Example: buildergen -src ./examples/test.go -name Person\n")
-	flag.VisitAll(flagPrinter)
+func GetUsage(formatPrinter PrinterFn) {
+	formatPrinter(usageFormat)
+	flag.VisitAll(flagPrinterGen(formatPrinter))
 }
 
-func flagPrinter(f *flag.Flag) {
-	fmt.Printf("- %-5s: %s\n", f.Name, f.Usage)
+func flagPrinterGen(formatPrinter PrinterFn) func(f *flag.Flag) {
+	return func(f *flag.Flag) {
+		formatPrinter("- %-5s: %s\n", f.Name, f.Usage)
+	}
 }

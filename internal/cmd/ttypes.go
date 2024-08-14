@@ -1,11 +1,16 @@
 package cmd
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/Jh123x/buildergen/internal/utils"
 )
+
+type PrinterFn func(string, ...any) (int, error)
+
+var _ PrinterFn = fmt.Printf
 
 //go:generate buildergen -src=./ttypes.go -name Config
 
