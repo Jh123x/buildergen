@@ -2,6 +2,7 @@ package generation
 
 import (
 	"strings"
+	"text/template"
 
 	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/Jh123x/buildergen/internal/utils"
@@ -18,6 +19,20 @@ type StructGenHelper struct {
 	Package string
 	Fields  []*Field
 	Imports []string
+}
+
+func (s *StructGenHelper) ToTemplate(fileName string) (string, error) {
+	tmpl, err := template.New("base").Parse(consts.TemplateValue)
+	if err != nil {
+		return "", err
+	}
+
+	ioFile := strings.Builder{}
+	if err := tmpl.Execute(&ioFile, s); err != nil {
+		return "", err
+	}
+
+	return ioFile.String(), nil
 }
 
 func (s *StructGenHelper) ToSource() string {

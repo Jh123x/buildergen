@@ -30,6 +30,26 @@ func GenerateBuilder(tSet *token.FileSet, typeSpec *ast.TypeSpec, imports []stri
 	return structHelper.ToSource(), nil
 }
 
+// GenerateBuilderTemplate generates the builder source code based on the given arguments.
+func GenerateBuilderTemplate(tSet *token.FileSet, typeSpec *ast.TypeSpec, imports []string, config *cmd.Config) (string, error) {
+	structHelper := &StructGenHelper{
+		Name:    config.Name,
+		Package: config.Package,
+		Fields:  make([]*Field, 0, 1000),
+		Imports: imports,
+	}
+
+	if typeSpec.Type != nil {
+		if typed, ok := typeSpec.Type.(*ast.StructType); ok {
+			if err := generateStructFields(structHelper, typed); err != nil {
+				return "", err
+			}
+		}
+	}
+
+	return structHelper.ToTemplate(config.Destination)
+}
+
 func generateStructFields(helper *StructGenHelper, structs *ast.StructType) error {
 	for _, field := range structs.Fields.List {
 		name, err := getName(field.Names)

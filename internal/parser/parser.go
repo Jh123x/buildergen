@@ -37,7 +37,8 @@ func ParseBuilderFile(config *cmd.Config) (string, error) {
 		return "", err
 	}
 
-	result, err := format.Source([]byte(results))
+	result := []byte(results)
+	result, err = format.Source([]byte(results))
 	if err != nil {
 		return "", err
 	}
