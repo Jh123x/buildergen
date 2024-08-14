@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
@@ -29,7 +30,18 @@ func main() {
 		return
 	}
 
-	if err := parser.ParseBuilderFile(config); err != nil {
+	builder, err := parser.ParseBuilderFile(config)
+	if err != nil {
 		panic(err)
+	}
+
+	file, err := os.Create(config.Destination)
+	if err != nil {
+		panic(err)
+	}
+
+	file.WriteString(builder)
+	if err := file.Close(); err != nil {
+		log.Println(err.Error())
 	}
 }

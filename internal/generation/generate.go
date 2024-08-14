@@ -3,81 +3,31 @@ package generation
 import (
 	"fmt"
 	"go/ast"
-	"go/format"
 	"go/token"
 	"log"
-	"os"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
 	"github.com/Jh123x/buildergen/internal/consts"
-	"golang.org/x/tools/imports"
-)
-
-var (
-	importOptions = &imports.Options{
-		FormatOnly: false,
-		TabIndent:  true,
-		Comments:   true,
-	}
 )
 
 // GenerateBuilder generates the builder source code based on the given arguments.
-func GenerateBuilder(tSet *token.FileSet, typeSpec *ast.TypeSpec, imports []string, config *cmd.Config) error {
+func GenerateBuilder(tSet *token.FileSet, typeSpec *ast.TypeSpec, imports []string, config *cmd.Config) (string, error) {
 	structHelper := &StructGenHelper{
 		Name:    config.Name,
 		Package: config.Package,
 		Fields:  make([]*Field, 0, 1000),
 		Imports: imports,
 	}
-	file, err := os.Create(config.Destination)
-	if err != nil {
-		return err
-	}
-
-	defer func() {
-		if err := file.Close(); err != nil {
-			log.Println(err.Error())
-		}
-	}()
 
 	if typeSpec.Type != nil {
-		typed, ok := typeSpec.Type.(*ast.StructType)
-		if ok {
+		if typed, ok := typeSpec.Type.(*ast.StructType); ok {
 			if err := generateStructFields(structHelper, typed); err != nil {
-				return err
+				return "", err
 			}
 		}
 	}
 
-	file.WriteString(structHelper.ToSource())
-	return nil
-}
-
-// FormatFile formats and optimize imports of the file at fileName.
-func FormatFile(fileName string) error {
-	res, err := os.ReadFile(fileName)
-	if err != nil {
-		return err
-	}
-
-	result, err := format.Source(res)
-	if err != nil {
-		return err
-	}
-
-	result, err = imports.Process("", result, importOptions)
-
-	if err != nil {
-		return err
-	}
-
-	file, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-
-	_, err = file.Write(result)
-	return err
+	return structHelper.ToSource(), nil
 }
 
 func generateStructFields(helper *StructGenHelper, structs *ast.StructType) error {

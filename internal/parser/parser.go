@@ -3,20 +3,22 @@ package parser
 import (
 	"fmt"
 	"go/ast"
+	"go/format"
 	"go/parser"
 	"go/token"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
 	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/Jh123x/buildergen/internal/generation"
+	"golang.org/x/tools/imports"
 )
 
 // ParseBuilderFile creates a file based on config and returns the first encountered error.
-func ParseBuilderFile(config *cmd.Config) error {
+func ParseBuilderFile(config *cmd.Config) (string, error) {
 	fset := token.NewFileSet()
 	astFile, err := parser.ParseFile(fset, config.Source, nil, 0)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if len(config.Package) == 0 && astFile.Package.IsValid() {
@@ -25,20 +27,27 @@ func ParseBuilderFile(config *cmd.Config) error {
 
 	res, ok := findRequestedStructType(astFile, config.Name)
 	if !ok {
-		return consts.ErrNoStructsFound
+		return "", consts.ErrNoStructsFound
 	}
 
 	importTree := astFile.Imports
-	imports := parseData(importTree)
-	if err := generation.GenerateBuilder(fset, res, imports, config); err != nil {
-		return err
+	importData := parseData(importTree)
+	results, err := generation.GenerateBuilder(fset, res, importData, config)
+	if err != nil {
+		return "", err
 	}
 
-	if err := generation.FormatFile(config.Destination); err != nil {
-		return err
+	result, err := format.Source([]byte(results))
+	if err != nil {
+		return "", err
 	}
 
-	return nil
+	result, err = imports.Process("", result, consts.ImportOptions)
+	if err != nil {
+		return "", err
+	}
+
+	return string(result), nil
 }
 
 func parseData(imports []*ast.ImportSpec) []string {
