@@ -1,5 +1,8 @@
 # BuilderGen
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/Jh123x/buildergen.svg)](https://pkg.go.dev/github.com/Jh123x/buildergen)
+![CI Badge](https://github.com/Jh123x/buildergen/actions/workflows/go.yml/badge.svg)
+
 BuilderGen is a tool used for generating builders for Golang `structs`.
 
 - [Commands](./docs/command "Documentation for Commands")
@@ -49,7 +52,6 @@ type Contact struct {
 After running the go generate, you can use the builder similar to what is shown below.
 
 ```go
-
 var defaultPerson = &Person{
 	ID: 1,
 	Name: "John",
