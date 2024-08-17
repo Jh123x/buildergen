@@ -1,3 +1,4 @@
+// This is the code used to benchmark the performance of BuilderGen
 package benchmark
 
 import "github.com/Jh123x/buildergen/examples"

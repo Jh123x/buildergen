@@ -1,3 +1,4 @@
+// The main package for running struct generation benchmarks
 package benchmark
 
 import (
