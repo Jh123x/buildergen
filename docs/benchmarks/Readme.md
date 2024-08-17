@@ -23,4 +23,4 @@ For commits that do not write to disk, we will be writing a disk writer file to 
 | v0.0.1       | 1083661 ns/op      | Initial Version                         | 3cce7d76d78fd76fc7b63886077a6eb47caa61e6 |
 | v0.0.2       | 536149 ns/op       | Format Builder in memory                | 96a9f0a46cee026e7476ff42978305f5a0f27af3 |
 | v0.0.2 (alt) | 823289 ns/op       | Use templates instead of string builder | 340359aea5b3c8ab15a26282a4514581ae8d73b6 |
-| v0.0.3       | 483838 ns/op       | Optimize keyword check                  |                                          |
+| v0.0.3       | 483838 ns/op       | Optimize keyword check                  | 418b16695ffeebf1192427f87ad586b377e9624d |
