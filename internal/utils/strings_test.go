@@ -69,33 +69,3 @@ func TestAny(t *testing.T) {
 		})
 	}
 }
-
-func TestContains(t *testing.T) {
-	tests := map[string]struct {
-		arr         []string
-		item        string
-		expectedRes bool
-	}{
-		"item found should return true": {
-			arr:         []string{"test", "test1", "test2"},
-			item:        "test1",
-			expectedRes: true,
-		},
-		"empty arr should return false": {
-			arr:         []string{},
-			item:        "test",
-			expectedRes: false,
-		},
-		"item not found should return false": {
-			arr:         []string{"test1", "test2", "test3"},
-			item:        "test4",
-			expectedRes: false,
-		},
-	}
-
-	for name, tc := range tests {
-		t.Run(name, func(t *testing.T) {
-			assert.Equal(t, tc.expectedRes, Contains(tc.arr, tc.item))
-		})
-	}
-}

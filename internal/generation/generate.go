@@ -56,6 +56,7 @@ func getTag(tag *ast.BasicLit) string {
 	if tag == nil {
 		return ""
 	}
+
 	return tag.Value
 }
 
