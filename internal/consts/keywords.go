@@ -1,31 +1,31 @@
 package consts
 
 const (
-	KEYWORD_GO          = "go" // 0
+	KEYWORD_GO          = "go"
 	KEYWORD_IF          = "if"
-	KEYWORD_FOR         = "for" // 2
+	KEYWORD_FOR         = "for"
 	KEYWORD_MAP         = "map"
 	KEYWORD_VAR         = "var"
-	KEYWORD_CASE        = "case" //5
+	KEYWORD_CASE        = "case"
 	KEYWORD_CHAN        = "chan"
 	KEYWORD_ELSE        = "else"
 	KEYWORD_FUNC        = "func"
 	KEYWORD_GOTO        = "goto"
 	KEYWORD_TYPE        = "type"
-	KEYWORD_BREAK       = "break" //11
+	KEYWORD_BREAK       = "break"
 	KEYWORD_CONST       = "const"
 	KEYWORD_DEFER       = "defer"
 	KEYWORD_RANGE       = "range"
-	KEYWORD_RETURN      = "return" //15
+	KEYWORD_RETURN      = "return"
 	KEYWORD_SELECT      = "select"
 	KEYWORD_STRUCT      = "struct"
 	KEYWORD_SWITCH      = "switch"
 	KEYWORD_IMPORT      = "import"
-	KEYWORD_DEFAULT     = "default" //20
+	KEYWORD_DEFAULT     = "default"
 	KEYWORD_PACKAGE     = "package"
-	KEYWORD_CONTINUE    = "continue"    //22
-	KEYWORD_INTERFACE   = "interface"   //23
-	KEYWORD_FALLTHROUGH = "fallthrough" //24
+	KEYWORD_CONTINUE    = "continue"
+	KEYWORD_INTERFACE   = "interface"
+	KEYWORD_FALLTHROUGH = "fallthrough"
 )
 
 var (

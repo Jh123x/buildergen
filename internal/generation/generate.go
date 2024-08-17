@@ -19,12 +19,17 @@ func GenerateBuilder(tSet *token.FileSet, typeSpec *ast.TypeSpec, imports []stri
 		Imports: imports,
 	}
 
-	if typeSpec.Type != nil {
-		if typed, ok := typeSpec.Type.(*ast.StructType); ok {
-			if err := generateStructFields(structHelper, typed); err != nil {
-				return "", err
-			}
-		}
+	if typeSpec.Type == nil {
+		return "", consts.ErrNoStructsFound
+	}
+
+	typed, ok := typeSpec.Type.(*ast.StructType)
+	if !ok {
+		return "", consts.ErrInvalidStructType
+	}
+
+	if err := generateStructFields(structHelper, typed); err != nil {
+		return "", err
 	}
 
 	return structHelper.ToSource(), nil
@@ -42,11 +47,14 @@ func generateStructFields(helper *StructGenHelper, structs *ast.StructType) erro
 			return err
 		}
 
-		helper.Fields = append(helper.Fields, &Field{
-			Name: name,
-			Type: typeVal,
-			Tags: getTag(field.Tag),
-		})
+		helper.Fields = append(
+			helper.Fields,
+			&Field{
+				Name: name,
+				Type: typeVal,
+				Tags: getTag(field.Tag),
+			},
+		)
 	}
 
 	return nil
@@ -110,9 +118,11 @@ func getType(typeVal ast.Expr) (string, error) {
 
 func getName(idents []*ast.Ident) (string, error) {
 	for _, val := range idents {
-		if len(val.Name) > 0 {
-			return val.Name, nil
+		if len(val.Name) == 0 {
+			continue
 		}
+
+		return val.Name, nil
 	}
 
 	return "", consts.ErrNameNotFound
