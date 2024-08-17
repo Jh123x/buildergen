@@ -1,3 +1,4 @@
+// This is the struct used for examples
 package examples
 
 import "github.com/Jh123x/buildergen/examples/nested"
