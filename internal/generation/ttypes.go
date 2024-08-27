@@ -36,14 +36,17 @@ func (s *StructGenHelper) ToSource() string {
 	srcBuilder.WriteString(" ")
 	srcBuilder.WriteString(s.Package)
 
-	srcBuilder.WriteString("\n\nimport (\n")
-	for _, importVal := range s.Imports {
-		srcBuilder.WriteString("\t")
-		srcBuilder.WriteString(importVal)
-		srcBuilder.WriteString("\n")
+	if len(s.Imports) > 0 {
+		srcBuilder.WriteString("\n\nimport (\n")
+		for _, importVal := range s.Imports {
+			srcBuilder.WriteString("\t")
+			srcBuilder.WriteString(importVal)
+			srcBuilder.WriteString("\n")
+		}
+		srcBuilder.WriteString(")")
 	}
 
-	srcBuilder.WriteString(")\n\ntype ")
+	srcBuilder.WriteString("\n\ntype ")
 	srcBuilder.WriteString(s.Name)
 	srcBuilder.WriteString("Builder struct {\n")
 	for _, field := range s.Fields {
