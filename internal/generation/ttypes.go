@@ -14,14 +14,21 @@ type Field struct {
 }
 
 type StructGenHelper struct {
-	Name    string
-	Package string
-	Fields  []*Field
-	Imports []string
-	KwMap   *utils.KeywordMap
+	Name        string
+	Package     string
+	Fields      []*Field
+	Imports     []string
+	maxFieldLen int
 }
 
 func (s *StructGenHelper) ToSource() string {
+	if s.maxFieldLen == 0 {
+		for _, f := range s.Fields {
+			if len(f.Name) > s.maxFieldLen {
+				s.maxFieldLen = len(f.Name)
+			}
+		}
+	}
 	srcBuilder := strings.Builder{}
 	srcBuilder.WriteString(consts.BUILD_HEADER)
 	srcBuilder.WriteString("\n")
@@ -29,19 +36,23 @@ func (s *StructGenHelper) ToSource() string {
 	srcBuilder.WriteString(" ")
 	srcBuilder.WriteString(s.Package)
 
-	srcBuilder.WriteString("\n\nimport (\n")
-	for _, importVal := range s.Imports {
-		srcBuilder.WriteString(importVal)
-		srcBuilder.WriteString("\n")
+	if len(s.Imports) > 0 {
+		srcBuilder.WriteString("\n\nimport (\n")
+		for _, importVal := range s.Imports {
+			srcBuilder.WriteString("\t")
+			srcBuilder.WriteString(importVal)
+			srcBuilder.WriteString("\n")
+		}
+		srcBuilder.WriteString(")")
 	}
 
-	srcBuilder.WriteString(")\n\ntype ")
+	srcBuilder.WriteString("\n\ntype ")
 	srcBuilder.WriteString(s.Name)
 	srcBuilder.WriteString("Builder struct {\n")
 	for _, field := range s.Fields {
 		srcBuilder.WriteString("\t")
 		srcBuilder.WriteString(field.Name)
-		srcBuilder.WriteString(" ")
+		srcBuilder.WriteString(strings.Repeat(" ", s.maxFieldLen-len(field.Name)+1))
 		srcBuilder.WriteString(field.Type)
 		if len(field.Tags) > 0 {
 			srcBuilder.WriteString(" ")
@@ -49,7 +60,7 @@ func (s *StructGenHelper) ToSource() string {
 		}
 		srcBuilder.WriteString("\n")
 	}
-	srcBuilder.WriteString("}\n")
+	srcBuilder.WriteString("}\n\n")
 
 	srcBuilder.WriteString(s.genNewMethod())
 
@@ -70,23 +81,26 @@ func (s *StructGenHelper) genNewMethod() string {
 	builder.WriteString(s.Name)
 	builder.WriteString(") *")
 	builder.WriteString(s.Name)
-	builder.WriteString("Builder {\nif b == nil {\nreturn nil\n}\n\nreturn &")
+	builder.WriteString("Builder {\n\tif b == nil {\n\t\treturn nil\n\t}\n\n\treturn &")
 	builder.WriteString(s.Name)
-	builder.WriteString("Builder{\n")
+	builder.WriteString("Builder{")
 	for _, field := range s.Fields {
+		builder.WriteString("\n\t\t")
 		builder.WriteString(field.Name)
-		builder.WriteString(": b.")
+		builder.WriteString(":")
+		builder.WriteString(strings.Repeat(" ", s.maxFieldLen-len(field.Name)+1))
+		builder.WriteString("b.")
 		builder.WriteString(field.Name)
-		builder.WriteString(",\n")
+		builder.WriteString(",")
 	}
-	builder.WriteString("\n}\n}\n\n")
+	builder.WriteString("\n\t}\n}\n\n")
 
 	return builder.String()
 }
 
 func (s *StructGenHelper) genMethod(field *Field) string {
 	paramName := strings.ToLower(field.Name)
-	if s.KwMap.IsKeyword(paramName) {
+	if utils.IsKeyword(paramName) {
 		paramName += "_"
 	}
 
@@ -105,7 +119,7 @@ func (s *StructGenHelper) genMethod(field *Field) string {
 	builder.WriteString(field.Name)
 	builder.WriteString(" = ")
 	builder.WriteString(paramName)
-	builder.WriteString("\nreturn b\n}\n\n")
+	builder.WriteString("\n\treturn b\n}\n\n")
 
 	return builder.String()
 }
@@ -116,19 +130,22 @@ func (s *StructGenHelper) genBuildMethod() string {
 	builder.WriteString(s.Name)
 	builder.WriteString("Builder) Build() *")
 	builder.WriteString(s.Name)
-	builder.WriteString(" {")
-	builder.WriteString("return &")
+	builder.WriteString(" {\n\treturn &")
 	builder.WriteString(s.Name)
 	builder.WriteString("{\n")
 
 	for _, field := range s.Fields {
+		builder.WriteString("\t\t")
 		builder.WriteString(field.Name)
-		builder.WriteString(": b.")
+		builder.WriteString(":")
+
+		builder.WriteString(strings.Repeat(" ", s.maxFieldLen-len(field.Name)+1))
+		builder.WriteString("b.")
 		builder.WriteString(field.Name)
 		builder.WriteString(",\n")
 	}
 
-	builder.WriteString("}\n}\n\n")
+	builder.WriteString("\t}\n}\n")
 
 	return builder.String()
 }

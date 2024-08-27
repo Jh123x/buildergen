@@ -26,6 +26,8 @@ const (
 	KEYWORD_CONTINUE    = "continue"
 	KEYWORD_INTERFACE   = "interface"
 	KEYWORD_FALLTHROUGH = "fallthrough"
+
+	HASH_IDX_MOD = 73
 )
 
 var (
@@ -56,4 +58,6 @@ var (
 		KEYWORD_INTERFACE,
 		KEYWORD_FALLTHROUGH,
 	}
+
+	KwHashMap = [HASH_IDX_MOD]string{"", "switch", "", "goto", "", "", "break", "defer", "", "", "import", "default", "type", "", "range", "return", "fallthrough", "", "", "", "struct", "", "", "", "", "", "map", "", "", "", "", "", "", "", "", "for", "", "var", "", "", "const", "", "", "", "", "chan", "", "case", "", "", "", "", "", "", "", "", "select", "", "", "package", "else", "if", "", "func", "", "", "continue", "", "go", "interface", "", "", ""}
 )
