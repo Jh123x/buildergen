@@ -3,7 +3,7 @@ package benchmark
 
 import "github.com/Jh123x/buildergen/examples"
 
-//go:generate buildergen -src ./benchmark.go -name Data
+//go:generate buildergen --src ./benchmark.go --name Data
 
 type Data struct {
 	Person     *examples.Person

@@ -1,7 +1,6 @@
 package generation
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/Jh123x/buildergen/internal/consts"
@@ -29,7 +28,6 @@ func (s *StructGenHelper) ToSource() string {
 				s.maxFieldLen = len(f.Name)
 			}
 		}
-		fmt.Println(s.maxFieldLen)
 	}
 	srcBuilder := strings.Builder{}
 	srcBuilder.WriteString(consts.BUILD_HEADER)
