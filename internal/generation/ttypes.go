@@ -18,7 +18,6 @@ type StructGenHelper struct {
 	Package string
 	Fields  []*Field
 	Imports []string
-	KwMap   *utils.KeywordMap
 }
 
 func (s *StructGenHelper) ToSource() string {
@@ -86,7 +85,7 @@ func (s *StructGenHelper) genNewMethod() string {
 
 func (s *StructGenHelper) genMethod(field *Field) string {
 	paramName := strings.ToLower(field.Name)
-	if s.KwMap.IsKeyword(paramName) {
+	if utils.IsKeyword(paramName) {
 		paramName += "_"
 	}
 

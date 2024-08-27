@@ -31,7 +31,7 @@ func TestKeywordMap(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			assert.Equal(t, tc.expectedRes, NewKeywordMap().IsKeyword(tc.keyword))
+			assert.Equal(t, tc.expectedRes, IsKeyword(tc.keyword))
 		})
 	}
 }
@@ -42,9 +42,10 @@ func BenchmarkKeywordLookup(b *testing.B) {
 	testAlgorithms := map[string]algo{
 		"Loop":           naiveIteration(),
 		"Map":            naiveMap(),
-		"Current":        NewKeywordMap().IsKeyword,
+		"Current":        IsKeyword,
 		"Switch":         naiveSwitch(),
 		"Optimization 1": attempt1(),
+		"attempt 2":      attempt2(),
 	}
 
 	tests := make([]kwTest, 0, 50)
@@ -135,7 +136,21 @@ func attempt1() algo {
 }
 
 func attempt2() algo {
+	KwHashMap := [73]string{"", "switch", "", "goto", "", "", "break", "defer", "", "", "import", "default", "type", "", "range", "return", "fallthrough", "", "", "", "struct", "", "", "", "", "", "map", "", "", "", "", "", "", "", "", "for", "", "var", "", "", "const", "", "", "", "", "chan", "", "case", "", "", "", "", "", "", "", "", "select", "", "", "package", "else", "if", "", "func", "", "", "continue", "", "go", "interface", "", "", ""}
 	return func(s string) bool {
-		return false
+		if len(s) < 2 || len(s) > 11 {
+			return false
+		}
+		hash, i := 0, 0
+		for i < len(s) {
+			hash += int(s[i])
+			i++
+		}
+
+		if len(KwHashMap[hash%73]) != len(s) {
+			return false
+		}
+
+		return KwHashMap[hash%73] == s
 	}
 }
