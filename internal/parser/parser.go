@@ -3,14 +3,12 @@ package parser
 import (
 	"fmt"
 	"go/ast"
-	"go/format"
 	"go/parser"
 	"go/token"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
 	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/Jh123x/buildergen/internal/generation"
-	"golang.org/x/tools/imports"
 )
 
 // ParseBuilderFile creates a file based on config and returns the first encountered error.
@@ -37,17 +35,7 @@ func ParseBuilderFile(config *cmd.Config) (string, error) {
 		return "", err
 	}
 
-	result, err := format.Source([]byte(results))
-	if err != nil {
-		return "", err
-	}
-
-	result, err = imports.Process("", result, consts.ImportOptions)
-	if err != nil {
-		return "", err
-	}
-
-	return string(result), nil
+	return string(results), nil
 }
 
 func parseData(imports []*ast.ImportSpec) []string {
