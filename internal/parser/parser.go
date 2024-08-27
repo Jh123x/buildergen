@@ -28,8 +28,7 @@ func ParseBuilderFile(config *cmd.Config) (string, error) {
 		return "", consts.ErrNoStructsFound
 	}
 
-	importTree := astFile.Imports
-	importData := parseData(importTree)
+	importData := parseData(astFile.Imports)
 	results, err := generation.GenerateBuilder(fset, res, importData, config)
 	if err != nil {
 		return "", err
@@ -56,11 +55,7 @@ func parseData(imports []*ast.ImportSpec) []string {
 func findRequestedStructType(f *ast.File, structName string) (*ast.TypeSpec, bool) {
 	for _, decl := range f.Decls {
 		genDecl, ok := decl.(*ast.GenDecl)
-		if !ok {
-			continue
-		}
-
-		if genDecl.Tok != token.TYPE && genDecl.Tok != token.IMPORT {
+		if !ok || (genDecl.Tok != token.TYPE && genDecl.Tok != token.IMPORT) {
 			continue
 		}
 

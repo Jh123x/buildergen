@@ -36,25 +36,25 @@ func NewConfig(src, dst, pkg, name *string) (*Config, error) {
 		return nil, consts.ErrNotGoFile
 	}
 
-	if utils.IsNilOrEmpty(dst) {
-		srcFileName := strings.Split(*src, ".")
-		fileName := strings.Join(srcFileName[:len(srcFileName)-1], ".")
-		builder := strings.Builder{}
-		builder.WriteString(fileName)
-		builder.WriteString(consts.DEFAULT_BUILDER_SUFFIX)
-		derivedDst := builder.String()
-		dst = &derivedDst
+	pkgVal := ""
+	if !utils.IsNilOrEmpty(pkg) {
+		pkgVal = *pkg
 	}
 
-	if utils.IsNilOrEmpty(pkg) {
-		emptyStr := ""
-		pkg = &emptyStr
+	if utils.IsNilOrEmpty(dst) {
+		fileName := (*src)[strings.LastIndex(*src, ".")+1:]
+		return &Config{
+			Source:      *src,
+			Destination: fileName + consts.DEFAULT_BUILDER_SUFFIX,
+			Package:     pkgVal,
+			Name:        *name,
+		}, nil
 	}
 
 	return &Config{
 		Source:      *src,
 		Destination: *dst,
-		Package:     *pkg,
+		Package:     pkgVal,
 		Name:        *name,
 	}, nil
 }

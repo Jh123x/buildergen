@@ -1,10 +1,10 @@
 package generation
 
 import (
-	"fmt"
 	"go/ast"
 	"go/token"
 	"log"
+	"strings"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
 	"github.com/Jh123x/buildergen/internal/consts"
@@ -37,13 +37,15 @@ func GenerateBuilder(tSet *token.FileSet, typeSpec *ast.TypeSpec, imports []stri
 
 func generateStructFields(helper *StructGenHelper, structs *ast.StructType) error {
 	for _, field := range structs.Fields.List {
-		name, err := getName(field.Names)
-		if err != nil {
+		builder := strings.Builder{}
+		if err := getName(field.Names, &builder); err != nil {
 			return err
 		}
 
-		typeVal, err := getType(field.Type)
-		if err != nil {
+		name := builder.String()
+		builder.Reset()
+
+		if err := getType(field.Type, &builder); err != nil {
 			return err
 		}
 
@@ -51,7 +53,7 @@ func generateStructFields(helper *StructGenHelper, structs *ast.StructType) erro
 			helper.Fields,
 			&Field{
 				Name: name,
-				Type: typeVal,
+				Type: builder.String(),
 				Tags: getTag(field.Tag),
 			},
 		)
@@ -68,62 +70,57 @@ func getTag(tag *ast.BasicLit) string {
 	return tag.Value
 }
 
-func getType(typeVal ast.Expr) (string, error) {
+func getType(typeVal ast.Expr, builder *strings.Builder) error {
 	switch v := typeVal.(type) {
 	case *ast.Ident:
-		return v.Name, nil
+		builder.WriteString(v.Name)
+		return nil
 	case *ast.StarExpr:
-		name, err := getType(v.X)
-		if err != nil {
-			return "", err
+		builder.WriteString("*")
+		if err := getType(v.X, builder); err != nil {
+			return err
 		}
-
-		return fmt.Sprintf("*%s", name), nil
 	case *ast.ArrayType:
-		name, err := getType(v.Elt)
-		if err != nil {
-			return "", err
+		builder.WriteString("[]")
+		if err := getType(v.Elt, builder); err != nil {
+			return err
 		}
-
-		return fmt.Sprintf("[]%s", name), nil
-
 	case *ast.MapType:
-		keyType, err := getType(v.Key)
-		if err != nil {
-			return "", err
-		}
-		valType, err := getType(v.Value)
-		if err != nil {
-			return "", err
+		builder.WriteString("map[")
+		if err := getType(v.Key, builder); err != nil {
+			return err
 		}
 
-		return fmt.Sprintf("map[%s]%s", keyType, valType), nil
+		builder.WriteString("]")
+		if err := getType(v.Value, builder); err != nil {
+			return err
+		}
 	case *ast.SelectorExpr:
-		pkg, err := getType(v.X)
-		if err != nil {
-			return "", nil
-		}
-		sType, err := getType(v.Sel)
-		if err != nil {
-			return "", nil
+		if err := getType(v.X, builder); err != nil {
+			return err
 		}
 
-		return fmt.Sprintf("%s.%s", pkg, sType), nil
+		builder.WriteString(".")
+		if err := getType(v.Sel, builder); err != nil {
+			return err
+		}
 	default:
 		log.Println(v)
-		return "", consts.ErrTypeNotfound
+		return consts.ErrTypeNotfound
 	}
 
+	return nil
 }
 
-func getName(idents []*ast.Ident) (string, error) {
+func getName(idents []*ast.Ident, builder *strings.Builder) error {
 	for _, val := range idents {
 		if len(val.Name) == 0 {
 			continue
 		}
 
-		return val.Name, nil
+		builder.WriteString(string(val.Name))
+		return nil
 	}
 
-	return "", consts.ErrNameNotFound
+	return consts.ErrNameNotFound
 }
