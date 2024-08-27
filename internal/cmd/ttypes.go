@@ -42,7 +42,7 @@ func NewConfig(src, dst, pkg, name *string) (*Config, error) {
 	}
 
 	if utils.IsNilOrEmpty(dst) {
-		fileName := (*src)[strings.LastIndex(*src, ".")+1:]
+		fileName := (*src)[:strings.LastIndex(*src, ".")]
 		return &Config{
 			Source:      *src,
 			Destination: fileName + consts.DEFAULT_BUILDER_SUFFIX,
