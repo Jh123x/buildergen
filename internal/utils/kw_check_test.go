@@ -52,12 +52,12 @@ func BenchmarkKeywordLookup(b *testing.B) {
 
 	for i := 0; i < 25; i++ {
 		kw := consts.Keywords[i]
-		kw1 := strings.Repeat("a", i)
-		tests = append(
-			tests,
-			kwTest{keyword: kw, expectedRes: true},
-			kwTest{keyword: kw1, expectedRes: false},
-		)
+		tests = append(tests, kwTest{keyword: kw, expectedRes: true})
+
+		for j := 0; j < 25*10; j++ {
+			kw1 := strings.Repeat(string([]byte{byte('a') + byte(i+j)}), i)
+			tests = append(tests, kwTest{keyword: kw1, expectedRes: false})
+		}
 	}
 
 	for name, algorithm := range testAlgorithms {
