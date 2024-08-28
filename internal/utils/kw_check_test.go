@@ -40,12 +40,12 @@ type algo func(string) bool
 
 func BenchmarkKeywordLookup(b *testing.B) {
 	testAlgorithms := map[string]algo{
-		"Loop":           naiveIteration(),
-		"Map":            naiveMap(),
-		"Current":        IsKeyword,
-		"Switch":         naiveSwitch(),
-		"Optimization 1": attempt1(),
-		"attempt 2":      attempt2(),
+		"Loop":         naiveIteration(),
+		"Map":          naiveMap(),
+		"Current":      IsKeyword,
+		"Switch":       naiveSwitch(),
+		"List and Ptr": attempt1(),
+		"Custom Hash":  attempt2(),
 	}
 
 	tests := make([]kwTest, 0, 50)
@@ -63,9 +63,8 @@ func BenchmarkKeywordLookup(b *testing.B) {
 	for name, algorithm := range testAlgorithms {
 		b.Run(name, func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
-				for _, t := range tests {
-					assert.Equal(b, t.expectedRes, algorithm(t.keyword), t.keyword)
-				}
+				t := tests[i%50]
+				assert.Equal(b, t.expectedRes, algorithm(t.keyword), t.keyword)
 			}
 		})
 	}
@@ -107,7 +106,7 @@ func naiveSwitch() algo {
 }
 
 func attempt1() algo {
-	buckets := [...][2]int{
+	buckets := [10][2]int{
 		{0, 2},   // 2
 		{2, 5},   // 3
 		{5, 11},  // 4
