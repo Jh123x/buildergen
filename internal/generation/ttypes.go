@@ -24,7 +24,7 @@ func (i *Import) ToImport() string {
 
 func (i *Import) GetName() string {
 	if len(i.Name) == 0 {
-		return path.Base(i.Path)[1 : len(i.Path)-1]
+		return path.Base(i.Path[1 : len(i.Path)-1])
 	}
 
 	return i.Name
