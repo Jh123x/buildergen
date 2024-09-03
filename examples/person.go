@@ -1,7 +1,12 @@
 // This is the struct used for examples
 package examples
 
-import "github.com/Jh123x/buildergen/examples/nested"
+import (
+	"os"
+
+	"github.com/Jh123x/buildergen/examples/nested"
+	"golang.org/x/tools/imports"
+)
 
 //go:generate buildergen -src ./person.go -name Person
 
@@ -17,4 +22,9 @@ type Person struct {
 type Contact struct {
 	Name  string
 	Phone string
+}
+
+type UnRelated struct {
+	importOpts *imports.Options
+	otherOpts  *os.FileMode
 }
