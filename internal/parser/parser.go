@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -9,7 +8,6 @@ import (
 	"github.com/Jh123x/buildergen/internal/cmd"
 	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/Jh123x/buildergen/internal/generation"
-	"golang.org/x/tools/imports"
 )
 
 // ParseBuilderFile creates a file based on config and returns the first encountered error.
@@ -35,24 +33,22 @@ func ParseBuilderFile(config *cmd.Config) (string, error) {
 		return "", err
 	}
 
-	importRes, err := imports.Process("", []byte(results), consts.ImportOptions)
-	if err != nil {
-		return "", err
-	}
-
-	return string(importRes), nil
+	return string(results), nil
 }
 
-func parseData(imports []*ast.ImportSpec) []string {
-	result := make([]string, 0, len(imports))
+func parseData(imports []*ast.ImportSpec) []*generation.Import {
+	result := make([]*generation.Import, 0, len(imports))
 
 	for _, res := range imports {
 		if res.Name == nil {
-			result = append(result, res.Path.Value)
+			result = append(result, &generation.Import{Path: res.Path.Value})
 			continue
 		}
 
-		result = append(result, fmt.Sprintf("%s %s", res.Name, res.Path.Value))
+		result = append(result, &generation.Import{
+			Name: res.Name.String(),
+			Path: res.Path.Value,
+		})
 	}
 
 	return result

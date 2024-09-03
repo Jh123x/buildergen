@@ -1,5 +1,15 @@
 package nested
 
+import (
+	"context"
+	"os"
+)
+
 type Test struct {
-	Val string
+	Val          string
+	ImportedType *os.FileMode
+}
+
+type OtherStruct struct {
+	OtherImports context.Context
 }

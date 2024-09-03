@@ -11,7 +11,7 @@ import (
 )
 
 // GenerateBuilder generates the builder source code based on the given arguments.
-func GenerateBuilder(tSet *token.FileSet, typeSpec *ast.TypeSpec, imports []string, config *cmd.Config) (string, error) {
+func GenerateBuilder(tSet *token.FileSet, typeSpec *ast.TypeSpec, imports []*Import, config *cmd.Config) (string, error) {
 	structHelper := &StructGenHelper{
 		Name:    config.Name,
 		Package: config.Package,
