@@ -1,11 +1,34 @@
 package generation
 
 import (
+	"fmt"
+	"path"
 	"strings"
 
 	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/Jh123x/buildergen/internal/utils"
 )
+
+type Import struct {
+	Name string
+	Path string
+}
+
+func (i *Import) ToImport() string {
+	if len(i.Name) == 0 {
+		return i.Path
+	}
+
+	return fmt.Sprintf("%s %s", i.Name, i.Path)
+}
+
+func (i *Import) GetName() string {
+	if len(i.Name) == 0 {
+		return path.Base(i.Path[1 : len(i.Path)-1])
+	}
+
+	return i.Name
+}
 
 type Field struct {
 	Name string
@@ -13,12 +36,26 @@ type Field struct {
 	Tags string
 }
 
+func (f *Field) GetUsedPackageName() string {
+	if !strings.Contains(f.Type, ".") {
+		return ""
+	}
+
+	name := strings.SplitN(f.Type, ".", 2)[0]
+	return strings.TrimPrefix(name, "*")
+}
+
+type empty struct{}
+
 type StructGenHelper struct {
-	Name        string
-	Package     string
-	Fields      []*Field
-	Imports     []string
-	maxFieldLen int
+	Name    string
+	Package string
+	Fields  []*Field
+	Imports []*Import
+
+	// Used Internally
+	maxFieldLen  int
+	usedPackages map[string]empty
 }
 
 func (s *StructGenHelper) ToSource() string {
@@ -29,6 +66,17 @@ func (s *StructGenHelper) ToSource() string {
 			}
 		}
 	}
+
+	if len(s.usedPackages) == 0 {
+		s.usedPackages = make(map[string]empty, len(s.Fields))
+		for _, f := range s.Fields {
+			pkgName := f.GetUsedPackageName()
+			if len(pkgName) > 0 {
+				s.usedPackages[pkgName] = empty{}
+			}
+		}
+	}
+
 	srcBuilder := strings.Builder{}
 	srcBuilder.WriteString(consts.BUILD_HEADER)
 	srcBuilder.WriteString("\n")
@@ -36,14 +84,30 @@ func (s *StructGenHelper) ToSource() string {
 	srcBuilder.WriteString(" ")
 	srcBuilder.WriteString(s.Package)
 
-	if len(s.Imports) > 0 {
-		srcBuilder.WriteString("\n\nimport (\n")
+	if len(s.Imports) > 0 && len(s.usedPackages) > 0 {
+		importBuffer := make([]string, 0, len(s.Imports))
 		for _, importVal := range s.Imports {
-			srcBuilder.WriteString("\t")
-			srcBuilder.WriteString(importVal)
-			srcBuilder.WriteString("\n")
+			if _, ok := s.usedPackages[importVal.GetName()]; !ok {
+				continue
+			}
+
+			importBuffer = append(importBuffer, importVal.ToImport())
 		}
-		srcBuilder.WriteString(")")
+
+		if len(importBuffer) == 1 {
+			srcBuilder.WriteString("\n\nimport ")
+			srcBuilder.WriteString(importBuffer[0])
+		}
+
+		if len(importBuffer) > 1 {
+			srcBuilder.WriteString("\n\nimport (\n")
+			for _, val := range s.Imports {
+				srcBuilder.WriteString("\t")
+				srcBuilder.WriteString(val.ToImport())
+				srcBuilder.WriteString("\n")
+			}
+			srcBuilder.WriteString(")")
+		}
 	}
 
 	srcBuilder.WriteString("\n\ntype ")
