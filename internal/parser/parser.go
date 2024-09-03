@@ -9,6 +9,7 @@ import (
 	"github.com/Jh123x/buildergen/internal/cmd"
 	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/Jh123x/buildergen/internal/generation"
+	"golang.org/x/tools/imports"
 )
 
 // ParseBuilderFile creates a file based on config and returns the first encountered error.
@@ -34,7 +35,12 @@ func ParseBuilderFile(config *cmd.Config) (string, error) {
 		return "", err
 	}
 
-	return string(results), nil
+	importRes, err := imports.Process("", []byte(results), consts.ImportOptions)
+	if err != nil {
+		return "", err
+	}
+
+	return string(importRes), nil
 }
 
 func parseData(imports []*ast.ImportSpec) []string {

@@ -1,6 +1,10 @@
 package consts
 
-import "errors"
+import (
+	"errors"
+
+	"golang.org/x/tools/imports"
+)
 
 const (
 	ErrMsgSrcNotfound    = "source file is required"
@@ -18,4 +22,10 @@ var (
 	ErrTypeNotfound      = errors.New(ErrMsgTypeNotFound)
 	ErrNotGoFile         = errors.New(ErrMsgNotGoFile)
 	ErrInvalidStructType = errors.New(ErrMsgInvalidStruct)
+
+	ImportOptions = &imports.Options{
+		FormatOnly: false,
+		TabIndent:  true,
+		Comments:   true,
+	}
 )
