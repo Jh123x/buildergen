@@ -26,4 +26,4 @@ For commits that do not write to disk, we will be writing a disk writer file to 
 | v0.0.3       | 483838 ns/op       | Optimize keyword check                  | 418b16695ffeebf1192427f87ad586b377e9624d |
 | v0.0.3 (alt) | 603091 ns/op       | Optimize keyword differently            | d3c0effd86f1d11af199f154ae907c327d57b444 |
 | v0.0.4       | 293983 ns/op       | Manual format/import pkgs               | 398b88ec1ffbd54a5ef58055c6f326431e305aa7 |
-| v0.0.5       | 418557 ns/op       | Fix import part using parser            |                                          |
+| v0.0.5       | 418557 ns/op       | Fix import part using parser            | ca7bcb9702e322f7e11fe686aed210668ed646c7 |
