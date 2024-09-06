@@ -15,7 +15,7 @@ func ParseBuilderFile(config *cmd.Config) (string, error) {
 	fset := token.NewFileSet()
 	astFile, err := parser.ParseFile(fset, config.Source, nil, 0)
 	if err != nil {
-		return "", err
+		return consts.EMPTY_STR, err
 	}
 
 	if len(config.Package) == 0 && astFile.Package.IsValid() {
@@ -24,13 +24,13 @@ func ParseBuilderFile(config *cmd.Config) (string, error) {
 
 	res, ok := findRequestedStructType(astFile, config.Name)
 	if !ok {
-		return "", consts.ErrNoStructsFound
+		return consts.EMPTY_STR, consts.ErrNoStructsFound
 	}
 
 	importData := parseData(astFile.Imports)
 	results, err := generation.GenerateBuilder(fset, res, importData, config)
 	if err != nil {
-		return "", err
+		return consts.EMPTY_STR, err
 	}
 
 	return string(results), nil

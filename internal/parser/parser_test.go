@@ -19,12 +19,27 @@ func TestParseBuilderFile(t *testing.T) {
 	}{
 		"simple struct": {
 			config: &cmd.Config{
-				Source:      currDir + "/data/nest.go",
-				Destination: currDir + "/data/nest_result.go",
-				Package:     "nested",
-				Name:        "Test",
+				Source:  currDir + "/data/nest.go",
+				Package: "data",
+				Name:    "Test",
 			},
 			expectedFileRes: currDir + "/data/nest_expected_result.go",
+		},
+		"struct with first letter cap": {
+			config: &cmd.Config{
+				Source:  currDir + "/data/name_collision.go",
+				Package: "data",
+				Name:    "NameCollide",
+			},
+			expectedFileRes: currDir + "/data/name_expected_result.go",
+		},
+		"struct keyword": {
+			config: &cmd.Config{
+				Source:  currDir + "/data/keywords.go",
+				Package: "data",
+				Name:    "Struct",
+			},
+			expectedFileRes: currDir + "/data/keywords_expected.go",
 		},
 	}
 
