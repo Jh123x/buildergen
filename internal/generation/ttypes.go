@@ -61,19 +61,24 @@ type StructGenHelper struct {
 func (s *StructGenHelper) ToSource() string {
 	if s.maxFieldLen == 0 {
 		for _, f := range s.Fields {
-			if len(f.Name) > s.maxFieldLen {
-				s.maxFieldLen = len(f.Name)
+			if len(f.Name) <= s.maxFieldLen {
+				continue
 			}
+
+			s.maxFieldLen = len(f.Name)
 		}
 	}
 
 	if len(s.usedPackages) == 0 {
 		s.usedPackages = make(map[string]empty, len(s.Fields))
+
 		for _, f := range s.Fields {
 			pkgName := f.GetUsedPackageName()
-			if len(pkgName) > 0 {
-				s.usedPackages[pkgName] = empty{}
+			if len(pkgName) == 0 {
+				continue
 			}
+
+			s.usedPackages[pkgName] = empty{}
 		}
 	}
 
@@ -84,7 +89,7 @@ func (s *StructGenHelper) ToSource() string {
 	srcBuilder.WriteString(" ")
 	srcBuilder.WriteString(s.Package)
 
-	if len(s.Imports) > 0 && len(s.usedPackages) > 0 {
+	if len(s.usedPackages) > 0 {
 		importBuffer := make([]string, 0, len(s.Imports))
 		for _, importVal := range s.Imports {
 			if _, ok := s.usedPackages[importVal.GetName()]; !ok {
@@ -126,19 +131,18 @@ func (s *StructGenHelper) ToSource() string {
 	}
 	srcBuilder.WriteString("}\n\n")
 
-	srcBuilder.WriteString(s.genNewMethod())
+	s.genNewMethod(&srcBuilder)
 
 	for _, field := range s.Fields {
-		srcBuilder.WriteString(s.genMethod(field))
+		s.genMethod(&srcBuilder, field)
 	}
 
-	srcBuilder.WriteString(s.genBuildMethod())
+	s.genBuildMethod(&srcBuilder)
 
 	return srcBuilder.String()
 }
 
-func (s *StructGenHelper) genNewMethod() string {
-	builder := strings.Builder{}
+func (s *StructGenHelper) genNewMethod(builder *strings.Builder) {
 	builder.WriteString("func New")
 	builder.WriteString(s.Name)
 	builder.WriteString("Builder(b *")
@@ -158,17 +162,14 @@ func (s *StructGenHelper) genNewMethod() string {
 		builder.WriteString(",")
 	}
 	builder.WriteString("\n\t}\n}\n\n")
-
-	return builder.String()
 }
 
-func (s *StructGenHelper) genMethod(field *Field) string {
-	paramName := strings.ToLower(field.Name)
+func (s *StructGenHelper) genMethod(builder *strings.Builder, field *Field) string {
+	paramName := utils.LowerFirstLetter(field.Name)
 	if utils.IsKeyword(paramName) {
 		paramName += "_"
 	}
 
-	builder := strings.Builder{}
 	builder.WriteString("func (b *")
 	builder.WriteString(s.Name)
 	builder.WriteString("Builder) With")
@@ -188,8 +189,7 @@ func (s *StructGenHelper) genMethod(field *Field) string {
 	return builder.String()
 }
 
-func (s *StructGenHelper) genBuildMethod() string {
-	builder := strings.Builder{}
+func (s *StructGenHelper) genBuildMethod(builder *strings.Builder) string {
 	builder.WriteString("func (b *")
 	builder.WriteString(s.Name)
 	builder.WriteString("Builder) Build() *")
