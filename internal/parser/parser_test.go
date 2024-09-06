@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
+	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -46,7 +47,7 @@ func TestParseBuilderFile(t *testing.T) {
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			res, err := ParseBuilderFile(tc.config)
-			expectedRes := ""
+			expectedRes := consts.EMPTY_STR
 
 			if len(tc.expectedFileRes) > 0 {
 				rawRes, err := os.ReadFile(tc.expectedFileRes)

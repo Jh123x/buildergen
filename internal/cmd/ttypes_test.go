@@ -71,7 +71,7 @@ func TestNewConfig(t *testing.T) {
 			Withpkg(nil).
 			WithexpectedConfig(
 				NewConfigBuilder(defaultConfig).
-					WithPackage("").
+					WithPackage(consts.EMPTY_STR).
 					Build(),
 			).Build(),
 	}

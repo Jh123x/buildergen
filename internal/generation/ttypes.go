@@ -38,7 +38,7 @@ type Field struct {
 
 func (f *Field) GetUsedPackageName() string {
 	if !strings.Contains(f.Type, ".") {
-		return ""
+		return consts.EMPTY_STR
 	}
 
 	name := strings.SplitN(f.Type, ".", 2)[0]

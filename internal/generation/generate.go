@@ -20,16 +20,16 @@ func GenerateBuilder(tSet *token.FileSet, typeSpec *ast.TypeSpec, imports []*Imp
 	}
 
 	if typeSpec.Type == nil {
-		return "", consts.ErrNoStructsFound
+		return consts.EMPTY_STR, consts.ErrNoStructsFound
 	}
 
 	typed, ok := typeSpec.Type.(*ast.StructType)
 	if !ok {
-		return "", consts.ErrInvalidStructType
+		return consts.EMPTY_STR, consts.ErrInvalidStructType
 	}
 
 	if err := generateStructFields(structHelper, typed); err != nil {
-		return "", err
+		return consts.EMPTY_STR, err
 	}
 
 	return structHelper.ToSource(), nil
@@ -64,7 +64,7 @@ func generateStructFields(helper *StructGenHelper, structs *ast.StructType) erro
 
 func getTag(tag *ast.BasicLit) string {
 	if tag == nil {
-		return ""
+		return consts.EMPTY_STR
 	}
 
 	return tag.Value

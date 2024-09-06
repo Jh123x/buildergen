@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,7 +22,7 @@ func TestGetUsage(t *testing.T) {
 		},
 		"with flags": {
 			flagDefineFn: func() {
-				_ = flag.String("test", "", "test usage")
+				_ = flag.String("test", consts.EMPTY_STR, "test usage")
 			},
 			expectedOutput: usageFormat + "- test : test usage\n",
 		},

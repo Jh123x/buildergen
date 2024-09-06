@@ -3,11 +3,12 @@ package utils
 import (
 	"testing"
 
+	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestIsNilOrEmpty(t *testing.T) {
-	testEmptyStr := ""
+	testEmptyStr := consts.EMPTY_STR
 	testStr := "t"
 
 	tests := map[string]struct {

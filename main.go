@@ -8,15 +8,16 @@ import (
 	"os"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
+	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/Jh123x/buildergen/internal/parser"
 	"github.com/Jh123x/buildergen/internal/utils"
 )
 
 var (
-	src  = flag.String("src", "", "[required] the source file path")
-	name = flag.String("name", "", "[required] the name of the struct")
-	dest = flag.String("dst", "", "[optional] the destination file path, default: {src_dir}/{src}_builder.go")
-	pkg  = flag.String("pkg", "", "[optional] the package name of the generated file, default: {src pkg}")
+	src  = flag.String("src", consts.EMPTY_STR, "[required] the source file path")
+	name = flag.String("name", consts.EMPTY_STR, "[required] the name of the struct")
+	dest = flag.String("dst", consts.EMPTY_STR, "[optional] the destination file path, default: {src_dir}/{src}_builder.go")
+	pkg  = flag.String("pkg", consts.EMPTY_STR, "[optional] the package name of the generated file, default: {src pkg}")
 )
 
 func main() {

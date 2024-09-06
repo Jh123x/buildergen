@@ -36,7 +36,7 @@ func NewConfig(src, dst, pkg, name *string) (*Config, error) {
 		return nil, consts.ErrNotGoFile
 	}
 
-	pkgVal := ""
+	pkgVal := consts.EMPTY_STR
 	if !utils.IsNilOrEmpty(pkg) {
 		pkgVal = *pkg
 	}
