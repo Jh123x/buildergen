@@ -28,4 +28,4 @@ For commits that do not write to disk, we will be writing a disk writer file to 
 | v0.0.4       | 293983 ns/op       | Manual format/import pkgs               | 398b88ec1ffbd54a5ef58055c6f326431e305aa7 |
 | v0.0.5       | 418557 ns/op       | Fix import part using parser            | ca7bcb9702e322f7e11fe686aed210668ed646c7 |
 | v0.0.6       | 283447 ns/op       | Update import part using parser         | 6e69aaf8fffb18ffb29aa7571e24fbc905eef8f9 |
-| v0.0.7       | 195134 ns/op       | Optimize string opts                    |                                          |
+| v0.0.7       | 195134 ns/op       | Optimize string opts                    | 9dfc215a883445f3bdd308a67566ee6f2201b054 |
