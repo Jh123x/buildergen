@@ -54,7 +54,7 @@ func BenchmarkKeywordLookup(b *testing.B) {
 		kw := consts.Keywords[i]
 		tests = append(tests, kwTest{keyword: kw, expectedRes: true})
 
-		for j := 0; j < 25*10; j++ {
+		for j := 0; j < 250; j++ {
 			kw1 := strings.Repeat(string([]byte{byte('a') + byte(i+j)}), i)
 			tests = append(tests, kwTest{keyword: kw1, expectedRes: false})
 		}
@@ -135,7 +135,6 @@ func attempt1() algo {
 }
 
 func attempt2() algo {
-	KwHashMap := [73]string{"", "switch", "", "goto", "", "", "break", "defer", "", "", "import", "default", "type", "", "range", "return", "fallthrough", "", "", "", "struct", "", "", "", "", "", "map", "", "", "", "", "", "", "", "", "for", "", "var", "", "", "const", "", "", "", "", "chan", "", "case", "", "", "", "", "", "", "", "", "select", "", "", "package", "else", "if", "", "func", "", "", "continue", "", "go", "interface", "", "", ""}
 	return func(s string) bool {
 		if len(s) < 2 || len(s) > 11 {
 			return false
@@ -146,10 +145,12 @@ func attempt2() algo {
 			i++
 		}
 
-		if len(KwHashMap[hash%73]) != len(s) {
+		if len(consts.KwHashMap[hash%73]) != len(s) {
 			return false
 		}
 
-		return KwHashMap[hash%73] == s
+		result := consts.KwHashMap[hash%73]
+
+		return result != consts.EMPTY_STR && result == s
 	}
 }
