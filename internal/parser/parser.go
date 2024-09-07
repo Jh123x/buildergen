@@ -43,51 +43,71 @@ func parseData(config *cmd.Config, scanner *bufio.Reader, helper *generation.Str
 			continue
 		}
 
-		switch kw {
-		case consts.KEYWORD_PACKAGE:
-			if err := parsePkg(scanner, helper); err != nil {
-				return err
-			}
-		case consts.KEYWORD_IMPORT:
-			if err := parseImport(scanner, helper); err != nil {
-				return err
-			}
-		case consts.KEYWORD_TYPE:
-			if err := parseType(scanner, helper, config.Name); err != nil {
-				if err == consts.ErrDone {
-					return nil
-				}
-
-				return err
-			}
-		default:
-			if strings.HasPrefix(kw, consts.COMMENTS) {
-				if _, err := scanner.ReadString('\n'); err != nil {
-					return err
-				}
-				continue
-			}
-			if strings.HasSuffix(kw, consts.COMMENT_START) {
-				for {
-					if _, err := scanner.ReadString(consts.COMMENT_END[0]); err != nil {
-						return err
-					}
-
-					v, err := scanner.ReadByte()
-					if err != nil {
-						return err
-					}
-
-					// End of comment
-					if v == '/' {
-						break
-					}
-				}
-				continue
-			}
-			continue
+		if err := parseByKeyword(kw, scanner, helper, config); err != nil {
+			return err
 		}
 	}
+}
+
+func parseByKeyword(kw string, scanner *bufio.Reader, helper *generation.StructGenHelper, config *cmd.Config) error {
+	switch kw {
+	case consts.KEYWORD_PACKAGE:
+		if err := parsePkg(scanner, helper); err != nil {
+			return err
+		}
+	case consts.KEYWORD_IMPORT:
+		if err := parseImport(scanner, helper); err != nil {
+			return err
+		}
+	case consts.KEYWORD_TYPE:
+		if err := parseType(scanner, helper, config.Name); err != nil {
+			if err == consts.ErrDone {
+				return nil
+			}
+
+			return err
+		}
+	default:
+		if strings.HasPrefix(kw, consts.COMMENTS) {
+			if err := parseInlineComments(scanner); err != nil {
+				return err
+			}
+		}
+
+		if strings.HasSuffix(kw, consts.COMMENT_START) {
+			if err := parseMultilineComments(scanner); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func parseMultilineComments(scanner *bufio.Reader) error {
+	for {
+		if _, err := scanner.ReadString(consts.COMMENT_END[0]); err != nil {
+			return err
+		}
+
+		v, err := scanner.ReadByte()
+		if err != nil {
+			return err
+		}
+
+		// End of comment
+		if v == '/' {
+			break
+		}
+	}
+
+	return nil
+}
+
+func parseInlineComments(scanner *bufio.Reader) error {
+	_, err := scanner.ReadString('\n')
+	return err
+
 }
 
 func parseType(scanner *bufio.Reader, helper *generation.StructGenHelper, target string) error {
