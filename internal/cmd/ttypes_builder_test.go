@@ -6,6 +6,7 @@ type testCaseBuilder struct {
 	dst            *string
 	pkg            *string
 	name           *string
+	withValidation *bool
 	expectedConfig *Config
 	expectedErr    error
 }
@@ -20,6 +21,7 @@ func NewtestCaseBuilder(b *testCase) *testCaseBuilder {
 		dst:            b.dst,
 		pkg:            b.pkg,
 		name:           b.name,
+		withValidation: b.withValidation,
 		expectedConfig: b.expectedConfig,
 		expectedErr:    b.expectedErr,
 	}
@@ -45,6 +47,11 @@ func (b *testCaseBuilder) Withname(name *string) *testCaseBuilder {
 	return b
 }
 
+func (b *testCaseBuilder) WithwithValidation(withValidation *bool) *testCaseBuilder {
+	b.withValidation = withValidation
+	return b
+}
+
 func (b *testCaseBuilder) WithexpectedConfig(expectedConfig *Config) *testCaseBuilder {
 	b.expectedConfig = expectedConfig
 	return b
@@ -61,6 +68,7 @@ func (b *testCaseBuilder) Build() *testCase {
 		dst:            b.dst,
 		pkg:            b.pkg,
 		name:           b.name,
+		withValidation: b.withValidation,
 		expectedConfig: b.expectedConfig,
 		expectedErr:    b.expectedErr,
 	}

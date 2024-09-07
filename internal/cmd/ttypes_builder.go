@@ -2,10 +2,11 @@
 package cmd
 
 type ConfigBuilder struct {
-	Source      string
-	Destination string
-	Package     string
-	Name        string
+	Source         string
+	Destination    string
+	Package        string
+	Name           string
+	WithValidation bool
 }
 
 func NewConfigBuilder(b *Config) *ConfigBuilder {
@@ -14,10 +15,11 @@ func NewConfigBuilder(b *Config) *ConfigBuilder {
 	}
 
 	return &ConfigBuilder{
-		Source:      b.Source,
-		Destination: b.Destination,
-		Package:     b.Package,
-		Name:        b.Name,
+		Source:         b.Source,
+		Destination:    b.Destination,
+		Package:        b.Package,
+		Name:           b.Name,
+		WithValidation: b.WithValidation,
 	}
 }
 
@@ -41,11 +43,17 @@ func (b *ConfigBuilder) WithName(name string) *ConfigBuilder {
 	return b
 }
 
+func (b *ConfigBuilder) WithWithValidation(withValidation bool) *ConfigBuilder {
+	b.WithValidation = withValidation
+	return b
+}
+
 func (b *ConfigBuilder) Build() *Config {
 	return &Config{
-		Source:      b.Source,
-		Destination: b.Destination,
-		Package:     b.Package,
-		Name:        b.Name,
+		Source:         b.Source,
+		Destination:    b.Destination,
+		Package:        b.Package,
+		Name:           b.Name,
+		WithValidation: b.WithValidation,
 	}
 }

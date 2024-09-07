@@ -2,6 +2,8 @@ package parser
 
 import (
 	"bufio"
+	"go/parser"
+	"go/token"
 	"io"
 	"os"
 	"strings"
@@ -14,6 +16,13 @@ import (
 
 // ParseBuilderFile creates a file based on config and returns the first encountered error.
 func ParseBuilderFile(config *cmd.Config) (string, error) {
+	if config.WithValidation {
+		fset := token.NewFileSet()
+		if _, err := parser.ParseFile(fset, config.Source, nil, 0); err != nil {
+			return consts.EMPTY_STR, err
+		}
+	}
+
 	file, err := os.Open(config.Source)
 	if err != nil {
 		return consts.EMPTY_STR, err
@@ -23,6 +32,14 @@ func ParseBuilderFile(config *cmd.Config) (string, error) {
 	scanner := bufio.NewReader(file)
 
 	parseData(config, scanner, structHelper)
+
+	if len(structHelper.Name) == 0 {
+		return consts.EMPTY_STR, consts.ErrNoStructsFound
+	}
+
+	if len(structHelper.Package) == 0 {
+		return consts.EMPTY_STR, consts.ErrSyntaxErr
+	}
 
 	return structHelper.ToSource(), nil
 }

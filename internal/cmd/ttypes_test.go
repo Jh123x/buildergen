@@ -10,32 +10,37 @@ import (
 //go:generate buildergen -src ttypes_test.go -name testCase -dst ttypes_builder_test.go
 
 type testCase struct {
-	src  *string
-	dst  *string
-	pkg  *string
-	name *string
+	src            *string
+	dst            *string
+	pkg            *string
+	name           *string
+	withValidation *bool
 
 	expectedConfig *Config
 	expectedErr    error
 }
 
 var (
-	defaultSrc    = "test_src.go"
-	defaultDst    = "test_dst.go"
-	defaultPkg    = "test"
-	defaultName   = "TestCase"
-	notGoSrc      = "not_go_ext"
+	defaultSrc        = "test_src.go"
+	defaultDst        = "test_dst.go"
+	defaultPkg        = "test"
+	defaultName       = "TestCase"
+	notGoSrc          = "not_go_ext"
+	defaultValidation = false
+
 	defaultConfig = &Config{
-		Source:      defaultSrc,
-		Destination: defaultDst,
-		Package:     defaultPkg,
-		Name:        defaultName,
+		Source:         defaultSrc,
+		Destination:    defaultDst,
+		Package:        defaultPkg,
+		Name:           defaultName,
+		WithValidation: defaultValidation,
 	}
 	defaultSuccessTestcase = &testCase{
-		src:  &defaultSrc,
-		dst:  &defaultDst,
-		pkg:  &defaultPkg,
-		name: &defaultName,
+		src:            &defaultSrc,
+		dst:            &defaultDst,
+		pkg:            &defaultPkg,
+		name:           &defaultName,
+		withValidation: &defaultValidation,
 
 		expectedConfig: defaultConfig,
 		expectedErr:    nil,
@@ -78,7 +83,7 @@ func TestNewConfig(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			cfg, err := NewConfig(tc.src, tc.dst, tc.pkg, tc.name)
+			cfg, err := NewConfig(tc.src, tc.dst, tc.pkg, tc.name, tc.withValidation)
 			assert.Equal(t, tc.expectedConfig, cfg)
 			assert.Equal(t, tc.expectedErr, err)
 		})

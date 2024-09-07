@@ -8,6 +8,7 @@ The command line consists of 4 different flags.
 | `--name`     | Required. Name of the Struct to build           | `buildgen --name Person`                  |
 | `--dst`      | Optional. The destination of the generated file | `buildgen --dst examples/test_builder.go` |
 | `--pkg`      | Optional. The package of the generated file     | `buildgen --pkg examples`                 |
+| `--validate` | Optional. Validates the source file syntax      | `buildergen --validate`                   |
 
 ## Command line
 
