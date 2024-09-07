@@ -27,7 +27,10 @@ const (
 	KEYWORD_INTERFACE   = "interface"
 	KEYWORD_FALLTHROUGH = "fallthrough"
 
-	EMPTY_STR = ""
+	EMPTY_STR     = ""
+	COMMENTS      = "//"
+	COMMENT_START = "/*"
+	COMMENT_END   = "*/"
 
 	HASH_IDX_MOD = 73
 )

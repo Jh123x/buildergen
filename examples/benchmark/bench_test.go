@@ -29,3 +29,16 @@ func BenchmarkCodeGen(b *testing.B) {
 		assert.Equal(b, string(expectedRes), data)
 	}
 }
+
+func BenchmarkCodeGenWithIO(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		data, err := parser.ParseBuilderFile(config)
+		assert.Nil(b, err)
+
+		file, err := os.Create(config.Destination)
+		assert.Nil(b, err)
+
+		file.WriteString(data)
+		assert.Nil(b, file.Close())
+	}
+}

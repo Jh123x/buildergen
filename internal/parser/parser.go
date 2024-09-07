@@ -1,77 +1,238 @@
 package parser
 
 import (
-	"go/ast"
-	"go/parser"
-	"go/token"
+	"bufio"
+	"io"
+	"os"
+	"strings"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
 	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/Jh123x/buildergen/internal/generation"
+	"github.com/Jh123x/buildergen/internal/utils"
 )
 
 // ParseBuilderFile creates a file based on config and returns the first encountered error.
 func ParseBuilderFile(config *cmd.Config) (string, error) {
-	fset := token.NewFileSet()
-	astFile, err := parser.ParseFile(fset, config.Source, nil, 0)
+	file, err := os.Open(config.Source)
 	if err != nil {
 		return consts.EMPTY_STR, err
 	}
 
-	if len(config.Package) == 0 && astFile.Package.IsValid() {
-		config.Package = astFile.Name.Name
-	}
+	structHelper := &generation.StructGenHelper{}
+	scanner := bufio.NewReader(file)
 
-	res, ok := findRequestedStructType(astFile, config.Name)
-	if !ok {
-		return consts.EMPTY_STR, consts.ErrNoStructsFound
-	}
+	parseData(config, scanner, structHelper)
 
-	importData := parseData(astFile.Imports)
-	results, err := generation.GenerateBuilder(fset, res, importData, config)
-	if err != nil {
-		return consts.EMPTY_STR, err
-	}
-
-	return string(results), nil
+	return structHelper.ToSource(), nil
 }
 
-func parseData(imports []*ast.ImportSpec) []*generation.Import {
-	result := make([]*generation.Import, 0, len(imports))
+func parseData(config *cmd.Config, scanner *bufio.Reader, helper *generation.StructGenHelper) error {
+	for {
+		kw, err := scanner.ReadString(' ')
+		if err == io.EOF {
+			return consts.ErrNotFound
+		}
 
-	for _, res := range imports {
-		if res.Name == nil {
-			result = append(result, &generation.Import{Path: res.Path.Value})
+		if err != nil {
+			return err
+		}
+
+		kw = strings.Trim(kw, consts.DEFAULT_TRIM)
+		if len(kw) == 0 {
 			continue
 		}
 
-		result = append(result, &generation.Import{
-			Name: res.Name.String(),
-			Path: res.Path.Value,
-		})
-	}
+		switch kw {
+		case consts.KEYWORD_PACKAGE:
+			if err := parsePkg(scanner, helper); err != nil {
+				return err
+			}
+		case consts.KEYWORD_IMPORT:
+			if err := parseImport(scanner, helper); err != nil {
+				return err
+			}
+		case consts.KEYWORD_TYPE:
+			if err := parseType(scanner, helper, config.Name); err != nil {
+				if err == consts.ErrDone {
+					return nil
+				}
 
-	return result
-}
-
-func findRequestedStructType(f *ast.File, structName string) (*ast.TypeSpec, bool) {
-	for _, decl := range f.Decls {
-		genDecl, ok := decl.(*ast.GenDecl)
-		if !ok || (genDecl.Tok != token.TYPE && genDecl.Tok != token.IMPORT) {
-			continue
-		}
-
-		for _, spec := range genDecl.Specs {
-			typeSpec, ok := spec.(*ast.TypeSpec)
-			if !ok {
+				return err
+			}
+		default:
+			if strings.HasPrefix(kw, consts.COMMENTS) {
+				if _, err := scanner.ReadString('\n'); err != nil {
+					return err
+				}
 				continue
 			}
+			if strings.HasSuffix(kw, consts.COMMENT_START) {
+				for {
+					if _, err := scanner.ReadString(consts.COMMENT_END[0]); err != nil {
+						return err
+					}
 
-			if _, ok := typeSpec.Type.(*ast.StructType); ok && typeSpec.Name.Name == structName {
-				return typeSpec, true
+					v, err := scanner.ReadByte()
+					if err != nil {
+						return err
+					}
+
+					// End of comment
+					if v == '/' {
+						break
+					}
+				}
+				continue
 			}
+			continue
 		}
 	}
+}
 
-	return nil, false
+func parseType(scanner *bufio.Reader, helper *generation.StructGenHelper, target string) error {
+	name, err := scanner.ReadString(' ')
+	if err != nil {
+		return err
+	}
+
+	name = strings.Trim(name, consts.DEFAULT_TRIM)
+	if name != target {
+		return nil
+	}
+
+	helper.Name = name
+	typeVal, err := scanner.ReadString(' ')
+
+	if err != nil {
+		return err
+	}
+
+	typeVal = strings.Trim(typeVal, consts.DEFAULT_TRIM)
+	if typeVal != consts.KEYWORD_STRUCT {
+		return nil
+	}
+
+	if err := parseStruct(scanner, helper); err != nil {
+		return err
+	}
+
+	return consts.ErrDone
+}
+
+func parseStruct(scanner *bufio.Reader, helper *generation.StructGenHelper) error {
+	fields, err := scanner.ReadString('}')
+	if err != nil {
+		return err
+	}
+
+	fieldRows := strings.Split(fields, "\n")
+	for _, row := range fieldRows {
+		row = strings.Trim(row, consts.DEFAULT_TRIM)
+		if len(row) <= 1 {
+			continue
+		}
+
+		field, err := parseFieldRow(row)
+		if err != nil {
+			return err
+		}
+
+		helper.Fields = append(helper.Fields, field)
+	}
+
+	return nil
+}
+
+func parseFieldRow(row string) (*generation.Field, error) {
+	tokens := utils.Filter(
+		utils.Map(
+			strings.SplitN(row, " ", 3),
+			func(val string) string { return strings.Trim(val, consts.DEFAULT_TRIM) },
+		),
+		func(val string) bool { return len(val) > 0 },
+	)
+
+	switch len(tokens) {
+	case 2:
+		return &generation.Field{
+			Name: tokens[0],
+			Type: tokens[1],
+		}, nil
+	case 3:
+		return &generation.Field{
+			Name: tokens[0],
+			Type: tokens[1],
+			Tags: tokens[2],
+		}, nil
+	default:
+		return nil, consts.ErrSyntaxErr
+	}
+}
+
+func parsePkg(scanner *bufio.Reader, helper *generation.StructGenHelper) error {
+	pkgName, err := scanner.ReadString('\n')
+	if err != nil {
+		return err
+	}
+
+	helper.Package = strings.Trim(pkgName, consts.DEFAULT_TRIM)
+	return nil
+}
+
+func parseImport(scanner *bufio.Reader, helper *generation.StructGenHelper) error {
+	impVal, err := scanner.ReadString('\n')
+	if err != nil {
+		return err
+	}
+	impVal = strings.Trim(impVal, consts.DEFAULT_TRIM)
+
+	if !strings.Contains(impVal, "(") {
+		imp, err := parseImportLine(impVal)
+		if err != nil {
+			return err
+		}
+
+		helper.Imports = []*generation.Import{imp}
+		return nil
+	}
+
+	importLines, err := scanner.ReadString(')')
+	if err != nil {
+		return err
+	}
+
+	importRows := strings.Split(importLines, "\n")
+	helper.Imports = make([]*generation.Import, 0, len(importRows[:len(importRows)-1]))
+
+	for _, row := range importRows {
+		if len(row) <= 2 {
+			continue
+		}
+
+		imp, err := parseImportLine(strings.Trim(row, consts.DEFAULT_TRIM))
+		if err != nil {
+			return err
+		}
+		helper.Imports = append(helper.Imports, imp)
+	}
+
+	return nil
+}
+
+func parseImportLine(importLine string) (*generation.Import, error) {
+	tokens := strings.Split(importLine, " ")
+	switch len(tokens) {
+	case 0:
+		return nil, nil
+	case 1:
+		return &generation.Import{Path: tokens[0]}, nil
+	case 2:
+		return &generation.Import{
+			Name: tokens[0],
+			Path: tokens[1],
+		}, nil
+	default:
+		return nil, consts.ErrSyntaxErr
+	}
 }

@@ -2,6 +2,7 @@ package parser
 
 import (
 	"os"
+	"path"
 	"testing"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
@@ -41,6 +42,14 @@ func TestParseBuilderFile(t *testing.T) {
 				Name:    "Struct",
 			},
 			expectedFileRes: currDir + "/data/keywords_expected.go",
+		},
+		"benchmark struct": {
+			config: &cmd.Config{
+				Source:  path.Join(path.Dir(path.Dir(currDir)), "..", "..", "examples", "benchmark", "benchmark.go"),
+				Package: "benchmark",
+				Name:    "Data",
+			},
+			expectedFileRes: path.Join(path.Dir(path.Dir(currDir)), "..", "..", "examples", "benchmark", "benchmark_builder.go"),
 		},
 	}
 
