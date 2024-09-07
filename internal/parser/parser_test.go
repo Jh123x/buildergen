@@ -45,11 +45,11 @@ func TestParseBuilderFile(t *testing.T) {
 		},
 		"benchmark struct": {
 			config: &cmd.Config{
-				Source:  path.Join(path.Dir(path.Dir(currDir)), "..", "..", "examples", "benchmark", "benchmark.go"),
+				Source:  path.Join(currDir, "..", "..", "examples", "benchmark", "benchmark.go"),
 				Package: "benchmark",
 				Name:    "Data",
 			},
-			expectedFileRes: path.Join(path.Dir(path.Dir(currDir)), "..", "..", "examples", "benchmark", "benchmark_builder.go"),
+			expectedFileRes: path.Join(currDir, "..", "..", "examples", "benchmark", "benchmark_builder.go"),
 		},
 	}
 
