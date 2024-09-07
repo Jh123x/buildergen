@@ -15,15 +15,16 @@ var _ PrinterFn = fmt.Printf
 //go:generate buildergen -src=./ttypes.go -name Config
 
 type Config struct {
-	Source      string
-	Destination string
-	Package     string
-	Name        string
+	Source         string
+	Destination    string
+	Package        string
+	Name           string
+	WithValidation bool
 }
 
 // NewConfig creates a new config with the given arguments.
 // It also initializes the default values config arguments.
-func NewConfig(src, dst, pkg, name *string) (*Config, error) {
+func NewConfig(src, dst, pkg, name *string, validation *bool) (*Config, error) {
 	if utils.IsNilOrEmpty(src) {
 		return nil, consts.ErrSrcNotFound
 	}
@@ -52,9 +53,10 @@ func NewConfig(src, dst, pkg, name *string) (*Config, error) {
 	}
 
 	return &Config{
-		Source:      *src,
-		Destination: *dst,
-		Package:     pkgVal,
-		Name:        *name,
+		Source:         *src,
+		Destination:    *dst,
+		Package:        pkgVal,
+		Name:           *name,
+		WithValidation: *validation,
 	}, nil
 }

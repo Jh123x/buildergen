@@ -21,9 +21,7 @@ func TestGetUsage(t *testing.T) {
 			expectedOutput: usageFormat,
 		},
 		"with flags": {
-			flagDefineFn: func() {
-				_ = flag.String("test", consts.EMPTY_STR, "test usage")
-			},
+			flagDefineFn:   func() { _ = flag.String("test", consts.EMPTY_STR, "test usage") },
 			expectedOutput: usageFormat + "- test : test usage\n",
 		},
 	}
