@@ -31,4 +31,4 @@ The old code only contains CodeGen + I/O mode as I/O is tightly coupled to the i
 | v0.0.5       | 418557 ns/op             | 202906 ns/op            | Fix import part using parser            | ca7bcb9702e322f7e11fe686aed210668ed646c7 |
 | v0.0.6       | 283447 ns/op             | 45850 ns/op             | Update import part using parser         | 6e69aaf8fffb18ffb29aa7571e24fbc905eef8f9 |
 | v0.0.7       | 195134 ns/op             | 48860 ns/op             | Optimize string opts                    | 9dfc215a883445f3bdd308a67566ee6f2201b054 |
-| v0.1.0       | 273165 ns/op             | 28255 ns/op             | Custom Parser                           |                                          |
+| v0.1.0       | 273165 ns/op             | 28255 ns/op             | Custom Parser                           | e9cc5dd3f1eb038ac51b6ea98c5fd5de09bc7afd |
