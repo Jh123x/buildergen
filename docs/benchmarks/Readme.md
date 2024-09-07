@@ -26,7 +26,7 @@ The old code only contains CodeGen + I/O mode as I/O is tightly coupled to the i
 | v0.0.2       | 536149 ns/op             | -                       | Format Builder in memory                | 96a9f0a46cee026e7476ff42978305f5a0f27af3 |
 | v0.0.2 (alt) | 823289 ns/op             | -                       | Use templates instead of string builder | 340359aea5b3c8ab15a26282a4514581ae8d73b6 |
 | v0.0.3       | 483838 ns/op             | 267546 ns/op            | Optimize keyword check                  | 418b16695ffeebf1192427f87ad586b377e9624d |
-| v0.0.3 (alt) | 603091 ns/op             | -                       | Optimize keyword differently            | d3c0effd86f1d11af199f154ae907c327d57b444 |
+| v0.0.3 (alt) | 603091 ns/op             | 267859 ns/op            | Optimize keyword differently            | d3c0effd86f1d11af199f154ae907c327d57b444 |
 | v0.0.4       | 293983 ns/op             | 51133 ns/op             | Manual format/import pkgs               | 398b88ec1ffbd54a5ef58055c6f326431e305aa7 |
 | v0.0.5       | 418557 ns/op             | 202906 ns/op            | Fix import part using parser            | ca7bcb9702e322f7e11fe686aed210668ed646c7 |
 | v0.0.6       | 283447 ns/op             | 45850 ns/op             | Update import part using parser         | 6e69aaf8fffb18ffb29aa7571e24fbc905eef8f9 |
