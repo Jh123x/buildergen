@@ -35,7 +35,7 @@ var (
 		Name:           defaultName,
 		WithValidation: defaultValidation,
 	}
-	defaultSuccessTestcase = &testCase{
+	defaultSuccessTestCase = &testCase{
 		src:            &defaultSrc,
 		dst:            &defaultDst,
 		pkg:            &defaultPkg,
@@ -49,30 +49,30 @@ var (
 
 func TestNewConfig(t *testing.T) {
 	tests := map[string]*testCase{
-		"success": NewtestCaseBuilder(defaultSuccessTestcase).Build(),
-		"empty src should error": NewtestCaseBuilder(defaultSuccessTestcase).
+		"success": NewtestCaseBuilder(defaultSuccessTestCase).Build(),
+		"empty src should error": NewtestCaseBuilder(defaultSuccessTestCase).
 			Withsrc(nil).
 			WithexpectedErr(consts.ErrSrcNotFound).
 			WithexpectedConfig(nil).
 			Build(),
-		"src not go file should error": NewtestCaseBuilder(defaultSuccessTestcase).
+		"src not go file should error": NewtestCaseBuilder(defaultSuccessTestCase).
 			Withsrc(&notGoSrc).
 			WithexpectedErr(consts.ErrNotGoFile).
 			WithexpectedConfig(nil).
 			Build(),
-		"empty name should error": NewtestCaseBuilder(defaultSuccessTestcase).
+		"empty name should error": NewtestCaseBuilder(defaultSuccessTestCase).
 			Withname(nil).
 			WithexpectedErr(consts.ErrNameNotFound).
 			WithexpectedConfig(nil).
 			Build(),
-		"empty dst should return dst based on src": NewtestCaseBuilder(defaultSuccessTestcase).
+		"empty dst should return dst based on src": NewtestCaseBuilder(defaultSuccessTestCase).
 			Withdst(nil).
 			WithexpectedConfig(
 				NewConfigBuilder(defaultConfig).
 					WithDestination("test_src_builder.go").
 					Build(),
 			).Build(),
-		"empty pkg should return default pkg": NewtestCaseBuilder(defaultSuccessTestcase).
+		"empty pkg should return default pkg": NewtestCaseBuilder(defaultSuccessTestCase).
 			Withpkg(nil).
 			WithexpectedConfig(
 				NewConfigBuilder(defaultConfig).
