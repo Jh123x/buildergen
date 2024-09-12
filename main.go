@@ -14,40 +14,65 @@ import (
 )
 
 var (
-	src            = flag.String("src", consts.EMPTY_STR, "[required] the source file path")
-	name           = flag.String("name", consts.EMPTY_STR, "[required] the name of the struct")
-	dest           = flag.String("dst", consts.EMPTY_STR, "[optional] the destination file path, default: {src_dir}/{src}_builder.go")
-	pkg            = flag.String("pkg", consts.EMPTY_STR, "[optional] the package name of the generated file, default: {src pkg}")
-	withValidation = flag.Bool("validate", false, "[optional] validate the syntax of the original file, default: false")
+	src            = flag.String("src", consts.EMPTY_STR, "the source file path")
+	name           = flag.String("name", consts.EMPTY_STR, "the name of the struct")
+	dest           = flag.String("dst", consts.EMPTY_STR, "the destination file path, default: {src_dir}/{src}_builder.go")
+	pkg            = flag.String("pkg", consts.EMPTY_STR, "the package name of the generated file, default: {src pkg}")
+	withValidation = flag.Bool("validate", false, "validate the syntax of the original file, default: false")
+
+	configFile = flag.String("config", consts.EMPTY_STR, "the config file for buildergen")
 )
 
 func main() {
 	flag.Parse()
 
-	if utils.IsNilOrEmpty(src) {
-		cmd.GetUsage(fmt.Printf)
-		os.Exit(1)
+	if !utils.IsNilOrEmpty(configFile) {
+		configs, err := cmd.ParseConfigFile(*configFile)
+		if err != nil {
+			cmd.GetUsage(fmt.Printf)
+			fmt.Printf("Error parsing config file: %s", err.Error())
+			return
+		}
+
+		for _, conf := range configs {
+			if err := generateFile(conf); err != nil {
+				panic(err)
+			}
+		}
 		return
 	}
 
-	config, err := cmd.NewConfig(src, dest, pkg, name, withValidation)
-	if err != nil {
-		cmd.GetUsage(fmt.Printf)
+	if !utils.IsNilOrEmpty(src) {
+		config, err := cmd.NewConfig(*src, *dest, *pkg, *name, *withValidation)
+		if err != nil {
+			cmd.GetUsage(fmt.Printf)
+			fmt.Printf("Error parsing config file: %s", err.Error())
+			return
+		}
+
+		generateFile(config)
 		return
 	}
 
+	cmd.GetUsage(fmt.Printf)
+	os.Exit(1)
+}
+
+func generateFile(config *cmd.Config) error {
 	builderSrc, err := parser.ParseBuilderFile(config)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	file, err := os.Create(config.Destination)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	file.WriteString(builderSrc)
 	if err := file.Close(); err != nil {
 		log.Println(err.Error())
 	}
+
+	return nil
 }

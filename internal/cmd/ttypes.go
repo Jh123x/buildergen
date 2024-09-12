@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/Jh123x/buildergen/internal/consts"
-	"github.com/Jh123x/buildergen/internal/utils"
 )
 
 type PrinterFn func(string, ...any) (int, error)
@@ -15,48 +14,52 @@ var _ PrinterFn = fmt.Printf
 //go:generate buildergen -src=./ttypes.go -name Config
 
 type Config struct {
-	Source         string
-	Destination    string
-	Package        string
-	Name           string
-	WithValidation bool
+	Source         string `yaml:"source"`
+	Destination    string `yaml:"destination"`
+	Package        string `yaml:"package"`
+	Name           string `yaml:"name"`
+	WithValidation bool   `yaml:"with-validation"`
 }
 
 // NewConfig creates a new config with the given arguments.
 // It also initializes the default values config arguments.
-func NewConfig(src, dst, pkg, name *string, validation *bool) (*Config, error) {
-	if utils.IsNilOrEmpty(src) {
+func NewConfig(src, dst, pkg, name string, validation bool) (*Config, error) {
+	config := &Config{
+		Source:         src,
+		Name:           name,
+		Package:        pkg,
+		Destination:    dst,
+		WithValidation: validation,
+	}
+
+	return config.FillDefaults()
+}
+
+func (c *Config) FillDefaults() (*Config, error) {
+	if c == nil {
+		return nil, consts.ErrInvalidConfigFile
+	}
+
+	if c.Source == "" {
 		return nil, consts.ErrSrcNotFound
 	}
 
-	if utils.IsNilOrEmpty(name) {
+	if c.Name == "" {
 		return nil, consts.ErrNameNotFound
 	}
 
-	if !strings.HasSuffix(*src, ".go") {
+	if !strings.HasSuffix(c.Source, ".go") {
 		return nil, consts.ErrNotGoFile
 	}
 
-	pkgVal := consts.EMPTY_STR
-	if !utils.IsNilOrEmpty(pkg) {
-		pkgVal = *pkg
+	if c.Package == "" {
+		c.Package = consts.EMPTY_STR
 	}
 
-	if utils.IsNilOrEmpty(dst) {
-		fileName := (*src)[:strings.LastIndex(*src, ".")]
-		return &Config{
-			Source:      *src,
-			Destination: fileName + consts.DEFAULT_BUILDER_SUFFIX,
-			Package:     pkgVal,
-			Name:        *name,
-		}, nil
+	if c.Destination == "" {
+		fileName := (c.Source)[:strings.LastIndex(c.Source, ".")]
+		c.Destination = fileName
 	}
 
-	return &Config{
-		Source:         *src,
-		Destination:    *dst,
-		Package:        pkgVal,
-		Name:           *name,
-		WithValidation: *validation,
-	}, nil
+	return c, nil
 }

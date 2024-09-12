@@ -2,11 +2,11 @@
 package cmd
 
 type testCaseBuilder struct {
-	src            *string
-	dst            *string
-	pkg            *string
-	name           *string
-	withValidation *bool
+	src            string
+	dst            string
+	pkg            string
+	name           string
+	withValidation bool
 	expectedConfig *Config
 	expectedErr    error
 }
@@ -27,27 +27,27 @@ func NewtestCaseBuilder(b *testCase) *testCaseBuilder {
 	}
 }
 
-func (b *testCaseBuilder) Withsrc(src *string) *testCaseBuilder {
+func (b *testCaseBuilder) Withsrc(src string) *testCaseBuilder {
 	b.src = src
 	return b
 }
 
-func (b *testCaseBuilder) Withdst(dst *string) *testCaseBuilder {
+func (b *testCaseBuilder) Withdst(dst string) *testCaseBuilder {
 	b.dst = dst
 	return b
 }
 
-func (b *testCaseBuilder) Withpkg(pkg *string) *testCaseBuilder {
+func (b *testCaseBuilder) Withpkg(pkg string) *testCaseBuilder {
 	b.pkg = pkg
 	return b
 }
 
-func (b *testCaseBuilder) Withname(name *string) *testCaseBuilder {
+func (b *testCaseBuilder) Withname(name string) *testCaseBuilder {
 	b.name = name
 	return b
 }
 
-func (b *testCaseBuilder) WithwithValidation(withValidation *bool) *testCaseBuilder {
+func (b *testCaseBuilder) WithwithValidation(withValidation bool) *testCaseBuilder {
 	b.withValidation = withValidation
 	return b
 }

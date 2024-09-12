@@ -4,7 +4,9 @@ import (
 	"flag"
 )
 
-const usageFormat = "BuilderGen is a builder code generation library to easily create builders around your struct\nUsage Example: `buildergen -src ./examples/test.go -name Person`\n"
+const usageFormat = "BuilderGen is a builder code generation library to easily create builders around your struct\n" +
+	"Usage Example:\nSingle files: `buildergen -src ./examples/test.go -name Person`\n" +
+	"Config files: `buildergen -config config.yml`"
 
 // GetUsage prints the help message for BuilderGen.
 func GetUsage(formatPrinter PrinterFn) {
