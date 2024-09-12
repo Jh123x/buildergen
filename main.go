@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
 	"github.com/Jh123x/buildergen/internal/consts"
@@ -34,11 +35,20 @@ func main() {
 			return
 		}
 
+		var wg sync.WaitGroup
+
 		for _, conf := range configs {
-			if err := generateFile(conf); err != nil {
-				panic(err)
-			}
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				if err := generateFile(conf); err != nil {
+					panic(err)
+				}
+			}()
 		}
+
+		wg.Wait()
+
 		return
 	}
 
