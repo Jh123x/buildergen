@@ -57,8 +57,7 @@ func (c *Config) FillDefaults() (*Config, error) {
 	}
 
 	if c.Destination == "" {
-		fileName := (c.Source)[:strings.LastIndex(c.Source, ".")]
-		c.Destination = fileName
+		c.Destination = c.Source[:strings.LastIndex(c.Source, ".")] + consts.DEFAULT_BUILDER_SUFFIX
 	}
 
 	return c, nil
