@@ -28,7 +28,9 @@ func ParseBuilderFile(config *cmd.Config) (string, error) {
 		return consts.EMPTY_STR, err
 	}
 
-	structHelper := &generation.StructGenHelper{}
+	structHelper := &generation.StructGenHelper{
+		Package: config.Package,
+	}
 	scanner := bufio.NewReader(file)
 
 	if err := parseData(config, scanner, structHelper); err != nil {
