@@ -31,7 +31,11 @@ func ParseBuilderFile(config *cmd.Config) (string, error) {
 	structHelper := &generation.StructGenHelper{}
 	scanner := bufio.NewReader(file)
 
-	parseData(config, scanner, structHelper)
+	if err := parseData(config, scanner, structHelper); err != nil {
+		if err != consts.ErrDone {
+			return "", err
+		}
+	}
 
 	if len(structHelper.Name) == 0 {
 		return consts.EMPTY_STR, consts.ErrNoStructsFound
@@ -86,10 +90,6 @@ func parseByKeyword(kw string, scanner *bufio.Reader, helper *generation.StructG
 		}
 	case consts.KEYWORD_TYPE:
 		if err := parseType(scanner, helper, config.Name); err != nil {
-			if err == consts.ErrDone {
-				return nil
-			}
-
 			return err
 		}
 	case consts.KEYWORD_VAR:
@@ -254,8 +254,8 @@ func parsePkg(scanner *bufio.Reader, helper *generation.StructGenHelper) error {
 		return err
 	}
 
-	pkg := strings.Trim(pkgName, consts.DEFAULT_TRIM)
 	if helper.Package == "" {
+		pkg := strings.Trim(pkgName, consts.DEFAULT_TRIM)
 		helper.Package = pkg
 	}
 
