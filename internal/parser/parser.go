@@ -45,8 +45,9 @@ func ParseBuilderFile(config *cmd.Config) (string, error) {
 }
 
 func parseData(config *cmd.Config, scanner *bufio.Reader, helper *generation.StructGenHelper) error {
+	buffer := strings.Builder{}
 	for {
-		kw, err := scanner.ReadString(' ')
+		r, _, err := scanner.ReadRune()
 		if err == io.EOF {
 			return consts.ErrNotFound
 		}
@@ -55,14 +56,21 @@ func parseData(config *cmd.Config, scanner *bufio.Reader, helper *generation.Str
 			return err
 		}
 
-		kw = strings.Trim(kw, consts.DEFAULT_TRIM)
+		if r != '\n' && r != ' ' {
+			buffer.WriteRune(r)
+			continue
+		}
+
+		kw := strings.Trim(buffer.String(), consts.DEFAULT_TRIM)
 		if len(kw) == 0 {
+			buffer.Reset()
 			continue
 		}
 
 		if err := parseByKeyword(kw, scanner, helper, config); err != nil {
 			return err
 		}
+		buffer.Reset()
 	}
 }
 
@@ -84,6 +92,10 @@ func parseByKeyword(kw string, scanner *bufio.Reader, helper *generation.StructG
 
 			return err
 		}
+	case consts.KEYWORD_VAR:
+		if err := parseVar(scanner, helper); err != nil {
+			return err
+		}
 	default:
 		if strings.HasPrefix(kw, consts.COMMENTS) {
 			if err := parseInlineComments(scanner); err != nil {
@@ -98,6 +110,10 @@ func parseByKeyword(kw string, scanner *bufio.Reader, helper *generation.StructG
 		}
 	}
 
+	return nil
+}
+
+func parseVar(scanner *bufio.Reader, helper *generation.StructGenHelper) error {
 	return nil
 }
 
@@ -134,22 +150,37 @@ func parseType(scanner *bufio.Reader, helper *generation.StructGenHelper, target
 	}
 
 	name = strings.Trim(name, consts.DEFAULT_TRIM)
-	if name != target {
-		return nil
-	}
 
-	helper.Name = name
 	typeVal, err := scanner.ReadString(' ')
-
 	if err != nil {
 		return err
 	}
 
 	typeVal = strings.Trim(typeVal, consts.DEFAULT_TRIM)
 	if typeVal != consts.KEYWORD_STRUCT {
+		// Any raw type def
+		if typeVal != consts.KEYWORD_INTERFACE {
+			_, err := scanner.ReadString('\n')
+			return err
+		}
+
+		// Interfaces
+		if _, err := scanner.ReadString('{'); err != nil {
+			return err
+		}
+
+		if _, err := scanner.ReadString('}'); err != nil {
+			return err
+		}
+
+		return err
+	}
+
+	if name != target {
 		return nil
 	}
 
+	helper.Name = name
 	if err := parseStruct(scanner, helper); err != nil {
 		return err
 	}
@@ -184,7 +215,7 @@ func parseStruct(scanner *bufio.Reader, helper *generation.StructGenHelper) erro
 func parseFieldRow(row string) (*generation.Field, error) {
 	tokens := utils.Filter(
 		utils.Map(
-			strings.SplitN(row, " ", 3),
+			strings.Split(row, " "),
 			func(val string) string { return strings.Trim(val, consts.DEFAULT_TRIM) },
 		),
 		func(val string) bool { return len(val) > 0 },
@@ -213,7 +244,11 @@ func parsePkg(scanner *bufio.Reader, helper *generation.StructGenHelper) error {
 		return err
 	}
 
-	helper.Package = strings.Trim(pkgName, consts.DEFAULT_TRIM)
+	pkg := strings.Trim(pkgName, consts.DEFAULT_TRIM)
+	if helper.Package == "" {
+		helper.Package = pkg
+	}
+
 	return nil
 }
 

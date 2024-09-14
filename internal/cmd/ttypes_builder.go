@@ -2,11 +2,11 @@
 package cmd
 
 type ConfigBuilder struct {
-	Source         string
-	Destination    string
-	Package        string
-	Name           string
-	WithValidation bool
+	Source         string `yaml:"source"`
+	Destination    string `yaml:"destination"`
+	Package        string `yaml:"package"`
+	Name           string `yaml:"name"`
+	WithValidation bool   `yaml:"with-validation"`
 }
 
 func NewConfigBuilder(b *Config) *ConfigBuilder {
