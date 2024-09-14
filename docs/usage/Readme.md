@@ -60,16 +60,15 @@ The config file should look something like this
 
 ```yaml
 configs:
-- source: source_file.go
-  destination: source_file_builder.go # Optional
-  package: pkg # Optional
-  name: StructName
-  with-validation: false # Optional
-- source: source_file_2.go
-  destination: source_file_2_builder.go # Optional
-  package: pkg # Optional
-  name: StructName
-  with-validation: false # Optional
+- source: ./internal/cmd/ttypes.go
+  name: Config
+- source: ./internal/cmd/ttypes_test.go
+  name: testCase
+  destination: ./internal/cmd/ttypes_builder_test.go
+- source: ./examples/benchmark/benchmark.go
+  name: Data
+- source: ./examples/person.go
+  name: Person
 ```
 
 This use case is more suitable for those who wants to build a builder for structs in other libraries but want to store
