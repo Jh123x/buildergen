@@ -93,7 +93,7 @@ func parseByKeyword(kw string, scanner *bufio.Reader, helper *generation.StructG
 			return err
 		}
 	case consts.KEYWORD_VAR:
-		if err := parseVar(scanner, helper); err != nil {
+		if err := parseVar(scanner); err != nil {
 			return err
 		}
 	default:
@@ -113,7 +113,17 @@ func parseByKeyword(kw string, scanner *bufio.Reader, helper *generation.StructG
 	return nil
 }
 
-func parseVar(scanner *bufio.Reader, helper *generation.StructGenHelper) error {
+func parseVar(scanner *bufio.Reader) error {
+	data, err := scanner.ReadString('\n')
+	if err != nil {
+		return err
+	}
+
+	if strings.Contains(data, "(") {
+		_, err := scanner.ReadString(')')
+		return err
+	}
+
 	return nil
 }
 
