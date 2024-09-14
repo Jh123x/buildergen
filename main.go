@@ -36,9 +36,10 @@ func main() {
 		}
 
 		var wg sync.WaitGroup
+		wg.Add(len(configs))
+		defer wg.Wait()
 
 		for _, conf := range configs {
-			wg.Add(1)
 			go func() {
 				defer wg.Done()
 				if err := generateFile(conf); err != nil {
@@ -46,8 +47,6 @@ func main() {
 				}
 			}()
 		}
-
-		wg.Wait()
 
 		return
 	}
