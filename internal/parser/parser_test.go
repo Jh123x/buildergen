@@ -45,19 +45,19 @@ func TestParseBuilderFile(t *testing.T) {
 		},
 		"benchmark struct": {
 			config: &cmd.Config{
-				Source:  path.Join(currDir, "..", "..", "..", "examples", "benchmark", "benchmark.go"),
+				Source:  path.Join(currDir, "..", "..", "examples", "benchmark", "benchmark.go"),
 				Package: "benchmark",
 				Name:    "Data",
 			},
-			expectedFileRes: path.Join(currDir, "..", "..", "..", "examples", "benchmark", "benchmark_builder.go"),
+			expectedFileRes: path.Join(currDir, "..", "..", "examples", "benchmark", "benchmark_builder.go"),
 		},
 		"internal file": {
 			config: &cmd.Config{
-				Source:  path.Join(currDir, "..", "..", "cmd", "ttypes.go"),
+				Source:  path.Join(currDir, "..", "cmd", "ttypes.go"),
 				Package: "benchmark",
 				Name:    "Config",
 			},
-			expectedFileRes: path.Join(currDir, "..", "..", "cmd", "ttypes_builder.go"),
+			expectedFileRes: path.Join(currDir, "..", "cmd", "ttypes_builder.go"),
 		},
 	}
 
