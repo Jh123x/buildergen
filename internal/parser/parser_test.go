@@ -51,6 +51,22 @@ func TestParseBuilderFile(t *testing.T) {
 			},
 			expectedFileRes: path.Join(currDir, "..", "..", "examples", "benchmark", "benchmark_builder.go"),
 		},
+		"internal file": {
+			config: &cmd.Config{
+				Source:  path.Join(currDir, "..", "cmd", "ttypes.go"),
+				Package: "cmd",
+				Name:    "Config",
+			},
+			expectedFileRes: path.Join(currDir, "..", "cmd", "ttypes_builder.go"),
+		},
+		"internal file test": {
+			config: &cmd.Config{
+				Source:  path.Join(currDir, "..", "cmd", "ttypes_test.go"),
+				Package: "cmd",
+				Name:    "testCase",
+			},
+			expectedFileRes: path.Join(currDir, "..", "cmd", "ttypes_builder_test.go"),
+		},
 	}
 
 	for name, tc := range tests {
@@ -64,8 +80,8 @@ func TestParseBuilderFile(t *testing.T) {
 				expectedRes = string(rawRes)
 			}
 
-			assert.Equal(t, expectedRes, res)
 			assert.Equal(t, tc.expectedErr, err)
+			assert.Equal(t, expectedRes, res)
 		})
 	}
 }

@@ -1,0 +1,10 @@
+configs:
+- source: ./internal/cmd/ttypes.go
+  name: Config
+- source: ./internal/cmd/ttypes_test.go
+  name: testCase
+  destination: ./internal/cmd/ttypes_builder_test.go
+- source: ./examples/benchmark/benchmark.go
+  name: Data
+- source: ./examples/person.go
+  name: Person

@@ -10,7 +10,7 @@ Install this package start using it
 
 ## Step 2: Use the package
 
-There are 2 ways to use this package
+There are multiple ways to use this package
 
 ### Step 2a: Using go generate
 
@@ -47,6 +47,33 @@ buildergen -src=./examples/test.go -name Person
 ```
 
 This will generate the same builder as the `go:generate` method.
+
+### Step 2c: Using the yaml config
+
+Another way to use BuilderGen is to use a config file
+
+```bash
+buildergen --config ./path/to/config.yaml
+```
+
+The config file should look something like this
+
+```yaml
+configs:
+- source: source_file.go
+  destination: source_file_builder.go # Optional
+  package: pkg # Optional
+  name: StructName
+  with-validation: false # Optional
+- source: source_file_2.go
+  destination: source_file_2_builder.go # Optional
+  package: pkg # Optional
+  name: StructName
+  with-validation: false # Optional
+```
+
+This use case is more suitable for those who wants to build a builder for structs in other libraries but want to store
+the mocks directly within the a `mocks`/`test` directory.
 
 ## Step 3: Using the builder
 

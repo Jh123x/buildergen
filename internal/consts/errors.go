@@ -7,12 +7,13 @@ import (
 )
 
 const (
-	ErrMsgSrcNotfound    = "source file is required"
-	ErrMsgNoStructsFound = "source file has no structs"
-	ErrMsgNameNotFound   = "name is required"
-	ErrMsgTypeNotFound   = "type not found for field"
-	ErrMsgNotGoFile      = "source is not a valid go file"
-	ErrMsgInvalidStruct  = "invalid struct type"
+	ErrMsgSrcNotfound       = "source file is required"
+	ErrMsgNoStructsFound    = "source file has no structs"
+	ErrMsgNameNotFound      = "name is required"
+	ErrMsgTypeNotFound      = "type not found for field"
+	ErrMsgNotGoFile         = "source is not a valid go file"
+	ErrMsgInvalidStruct     = "invalid struct type"
+	ErrMsgInvalidConfigFile = "invalid config file"
 )
 
 var (
@@ -25,6 +26,7 @@ var (
 	ErrSyntaxErr         = errors.New("syntax error")
 	ErrNotFound          = errors.New("target struct is not found")
 	ErrDone              = errors.New("Done")
+	ErrInvalidConfigFile = errors.New(ErrMsgInvalidConfigFile)
 
 	ImportOptions = &imports.Options{
 		FormatOnly: false,

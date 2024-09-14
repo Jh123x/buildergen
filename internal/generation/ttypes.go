@@ -55,17 +55,20 @@ type StructGenHelper struct {
 
 	// Used Internally
 	maxFieldLen  int
+	maxTypeLen   int
 	usedPackages map[string]empty
 }
 
 func (s *StructGenHelper) ToSource() string {
 	if s.maxFieldLen == 0 {
 		for _, f := range s.Fields {
-			if len(f.Name) <= s.maxFieldLen {
-				continue
+			if len(f.Name) > s.maxFieldLen {
+				s.maxFieldLen = len(f.Name)
 			}
 
-			s.maxFieldLen = len(f.Name)
+			if len(f.Type) > s.maxTypeLen {
+				s.maxTypeLen = len(f.Type)
+			}
 		}
 	}
 
@@ -124,7 +127,7 @@ func (s *StructGenHelper) ToSource() string {
 		srcBuilder.WriteString(strings.Repeat(" ", s.maxFieldLen-len(field.Name)+1))
 		srcBuilder.WriteString(field.Type)
 		if len(field.Tags) > 0 {
-			srcBuilder.WriteString(" ")
+			srcBuilder.WriteString(strings.Repeat(" ", s.maxTypeLen-len(field.Type)+1))
 			srcBuilder.WriteString(field.Tags)
 		}
 		srcBuilder.WriteString("\n")
