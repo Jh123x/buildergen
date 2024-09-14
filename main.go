@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 	"sync"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
@@ -42,6 +43,11 @@ func main() {
 		for _, conf := range configs {
 			go func() {
 				defer wg.Done()
+				if path.Dir(conf.Source) != path.Dir(conf.Destination) {
+					fmt.Printf("[%s::%s] dest in different path from destination is currently not supported\n", conf.Source, conf.Name)
+					return
+				}
+
 				if err := generateFile(conf); err != nil {
 					panic(err)
 				}
