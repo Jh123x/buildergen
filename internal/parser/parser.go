@@ -33,10 +33,8 @@ func ParseBuilderFile(config *cmd.Config) (string, error) {
 	}
 	scanner := bufio.NewReader(file)
 
-	if err := parseData(config, scanner, structHelper); err != nil {
-		if err != consts.ErrDone {
-			return "", err
-		}
+	if err := parseData(config, scanner, structHelper); err != nil && err != consts.ErrDone {
+		return "", err
 	}
 
 	if len(structHelper.Name) == 0 {
