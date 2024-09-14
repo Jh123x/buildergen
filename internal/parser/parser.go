@@ -231,6 +231,13 @@ func parseFieldRow(row string) (*generation.Field, error) {
 		func(val string) bool { return len(val) > 0 },
 	)
 
+	for idx, va := range tokens {
+		if strings.HasPrefix(va, "//") {
+			tokens = tokens[:idx]
+			break
+		}
+	}
+
 	switch len(tokens) {
 	case 2:
 		return &generation.Field{
