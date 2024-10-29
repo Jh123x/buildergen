@@ -61,7 +61,7 @@ func main() {
 		config, err := cmd.NewConfig(*src, *dest, *pkg, *name, *withValidation)
 		if err != nil {
 			cmd.GetUsage(fmt.Printf)
-			fmt.Printf("Error parsing config file: %s", err.Error())
+			log.Printf("Error parsing config file: %s", err.Error())
 			return
 		}
 
