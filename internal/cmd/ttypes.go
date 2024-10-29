@@ -14,11 +14,12 @@ var _ PrinterFn = fmt.Printf
 //go:generate buildergen -src=./ttypes.go -name Config
 
 type Config struct {
-	Source         string `yaml:"source"`
-	Destination    string `yaml:"destination"`
-	Package        string `yaml:"package"`
-	Name           string `yaml:"name"`
-	WithValidation bool   `yaml:"with-validation"`
+	Source         string      `yaml:"source"`
+	Destination    string      `yaml:"destination"`
+	Package        string      `yaml:"package"`
+	Name           string      `yaml:"name"`
+	WithValidation bool        `yaml:"with-validation"`
+	ParserMode     consts.Mode `yaml:"mode"`
 }
 
 // NewConfig creates a new config with the given arguments.
@@ -58,6 +59,10 @@ func (c *Config) FillDefaults() (*Config, error) {
 
 	if c.Destination == "" {
 		c.Destination = c.Source[:strings.LastIndex(c.Source, ".")] + consts.DEFAULT_BUILDER_SUFFIX
+	}
+
+	if c.ParserMode == "" {
+		c.ParserMode = consts.MODE_FAST
 	}
 
 	return c, nil

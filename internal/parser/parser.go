@@ -14,6 +14,12 @@ import (
 	"github.com/Jh123x/buildergen/internal/utils"
 )
 
+var (
+	parserMode = map[consts.Mode]func(config *cmd.Config, scanner *bufio.Reader, helper *generation.StructGenHelper) error{
+		consts.MODE_FAST: parseDataByCustomParser,
+	}
+)
+
 // ParseBuilderFile creates a file based on config and returns the first encountered error.
 func ParseBuilderFile(config *cmd.Config) (string, error) {
 	if config.WithValidation {
@@ -33,7 +39,12 @@ func ParseBuilderFile(config *cmd.Config) (string, error) {
 	}
 	scanner := bufio.NewReader(file)
 
-	if err := parseData(config, scanner, structHelper); err != nil && err != consts.ErrDone {
+	parserFn, ok := parserMode[config.ParserMode]
+	if !ok {
+		return "", consts.ErrInvalidParserMode
+	}
+
+	if err := parserFn(config, scanner, structHelper); err != nil && err != consts.ErrDone {
 		return "", err
 	}
 
@@ -48,7 +59,7 @@ func ParseBuilderFile(config *cmd.Config) (string, error) {
 	return structHelper.ToSource(), nil
 }
 
-func parseData(config *cmd.Config, scanner *bufio.Reader, helper *generation.StructGenHelper) error {
+func parseDataByCustomParser(config *cmd.Config, scanner *bufio.Reader, helper *generation.StructGenHelper) error {
 	buffer := strings.Builder{}
 	for {
 		r, _, err := scanner.ReadRune()
