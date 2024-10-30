@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"os"
 	"path"
 	"testing"
@@ -69,19 +70,25 @@ func TestParseBuilderFile(t *testing.T) {
 		},
 	}
 
-	for name, tc := range tests {
-		t.Run(name, func(t *testing.T) {
-			res, err := ParseBuilderFile(tc.config)
-			expectedRes := consts.EMPTY_STR
+	for _, mode := range consts.ALL_MODES {
+		for name, tc := range tests {
+			t.Run(fmt.Sprintf("%s_%s", name, mode), func(t *testing.T) {
+				if tc.config != nil {
+					tc.config.ParserMode = mode
+				}
 
-			if len(tc.expectedFileRes) > 0 {
-				rawRes, err := os.ReadFile(tc.expectedFileRes)
-				assert.Nil(t, err)
-				expectedRes = string(rawRes)
-			}
+				res, err := ParseBuilderFile(tc.config)
+				expectedRes := consts.EMPTY_STR
 
-			assert.Equal(t, tc.expectedErr, err)
-			assert.Equal(t, expectedRes, res)
-		})
+				if len(tc.expectedFileRes) > 0 {
+					rawRes, err := os.ReadFile(tc.expectedFileRes)
+					assert.Nil(t, err)
+					expectedRes = string(rawRes)
+				}
+
+				assert.Equal(t, tc.expectedErr, err)
+				assert.Equal(t, expectedRes, res)
+			})
+		}
 	}
 }
