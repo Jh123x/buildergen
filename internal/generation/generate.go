@@ -5,33 +5,25 @@ import (
 	"log"
 	"strings"
 
-	"github.com/Jh123x/buildergen/internal/cmd"
 	"github.com/Jh123x/buildergen/internal/consts"
 )
 
 // GenerateBuilder generates the builder source code based on the given arguments.
-func GenerateBuilder(typeSpec *ast.TypeSpec, imports []*Import, config *cmd.Config) (string, error) {
-	structHelper := &StructGenHelper{
-		Name:    config.Name,
-		Package: config.Package,
-		Fields:  make([]*Field, 0, 1000),
-		Imports: imports,
-	}
-
+func GenerateBuilder(typeSpec *ast.TypeSpec, structHelper *StructGenHelper) error {
 	if typeSpec.Type == nil {
-		return consts.EMPTY_STR, consts.ErrNoStructsFound
+		return consts.ErrNoStructsFound
 	}
 
 	typed, ok := typeSpec.Type.(*ast.StructType)
 	if !ok {
-		return consts.EMPTY_STR, consts.ErrInvalidStructType
+		return consts.ErrInvalidStructType
 	}
 
 	if err := generateStructFields(structHelper, typed); err != nil {
-		return consts.EMPTY_STR, err
+		return err
 	}
 
-	return structHelper.ToSource(), nil
+	return nil
 }
 
 func generateStructFields(helper *StructGenHelper, structs *ast.StructType) error {

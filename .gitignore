@@ -22,3 +22,6 @@ go.work
 
 # Profiling file
 *.prof
+
+# IDE
+.idea/

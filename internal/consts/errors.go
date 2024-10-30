@@ -24,9 +24,11 @@ var (
 	ErrNotGoFile         = errors.New(ErrMsgNotGoFile)
 	ErrInvalidStructType = errors.New(ErrMsgInvalidStruct)
 	ErrSyntaxErr         = errors.New("syntax error")
+	ErrPackageNotFound   = errors.New("package not found")
 	ErrNotFound          = errors.New("target struct is not found")
-	ErrDone              = errors.New("Done")
+	ErrDone              = errors.New("done")
 	ErrInvalidConfigFile = errors.New(ErrMsgInvalidConfigFile)
+	ErrInvalidParserMode = errors.New("invalid Parser Mode")
 
 	ImportOptions = &imports.Options{
 		FormatOnly: false,

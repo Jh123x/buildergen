@@ -6,16 +6,18 @@ import (
 	"testing"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
+	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/Jh123x/buildergen/internal/parser"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	config = &cmd.Config{
+	fastConfig = &cmd.Config{
 		Source:      "./benchmark.go",
 		Destination: "./benchmark_builder.go",
 		Package:     "benchmark",
 		Name:        "Data",
+		ParserMode:  consts.MODE_FAST,
 	}
 
 	expectedRes, _ = os.ReadFile("./benchmark_builder.go")
@@ -23,7 +25,7 @@ var (
 
 func BenchmarkCodeGen(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		data, err := parser.ParseBuilderFile(config)
+		data, err := parser.ParseBuilderFile(fastConfig)
 		assert.Nil(b, err)
 
 		assert.Equal(b, string(expectedRes), data)
@@ -32,10 +34,10 @@ func BenchmarkCodeGen(b *testing.B) {
 
 func BenchmarkCodeGenWithIO(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		data, err := parser.ParseBuilderFile(config)
+		data, err := parser.ParseBuilderFile(fastConfig)
 		assert.Nil(b, err)
 
-		file, err := os.Create(config.Destination)
+		file, err := os.Create(fastConfig.Destination)
 		assert.Nil(b, err)
 
 		file.WriteString(data)

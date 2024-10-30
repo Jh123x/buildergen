@@ -21,6 +21,7 @@ var (
 	dest           = flag.String("dst", consts.EMPTY_STR, "the destination file path, default: {src_dir}/{src}_builder.go")
 	pkg            = flag.String("pkg", consts.EMPTY_STR, "the package name of the generated file, default: {src pkg}")
 	withValidation = flag.Bool("validate", false, "validate the syntax of the original file, default: false")
+	astMode        = flag.String("mode", string(consts.MODE_AST), "the parser mode")
 
 	configFile = flag.String("config", consts.EMPTY_STR, "the config file for buildergen")
 )
@@ -49,7 +50,7 @@ func main() {
 				}
 
 				if err := generateFile(conf); err != nil {
-					panic(err)
+					fmt.Printf("[%s::%s] %s\n", conf.Source, conf.Name, err)
 				}
 			}()
 		}
@@ -58,10 +59,10 @@ func main() {
 	}
 
 	if !utils.IsNilOrEmpty(src) {
-		config, err := cmd.NewConfig(*src, *dest, *pkg, *name, *withValidation)
+		config, err := cmd.NewConfig(*src, *dest, *pkg, *name, *withValidation, consts.Mode(*astMode))
 		if err != nil {
 			cmd.GetUsage(fmt.Printf)
-			fmt.Printf("Error parsing config file: %s", err.Error())
+			log.Printf("Error parsing config file: %s", err.Error())
 			return
 		}
 

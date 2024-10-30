@@ -6,5 +6,7 @@ configs:
   destination: ./internal/cmd/ttypes_builder_test.go
 - source: ./examples/benchmark/benchmark.go
   name: Data
+  mode: DEFAULT
 - source: ./examples/person.go
   name: Person
+  mode: FAST
