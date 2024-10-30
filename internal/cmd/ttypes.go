@@ -24,13 +24,14 @@ type Config struct {
 
 // NewConfig creates a new config with the given arguments.
 // It also initializes the default values config arguments.
-func NewConfig(src, dst, pkg, name string, validation bool) (*Config, error) {
+func NewConfig(src, dst, pkg, name string, validation bool, astMode consts.Mode) (*Config, error) {
 	config := &Config{
 		Source:         src,
 		Name:           name,
 		Package:        pkg,
 		Destination:    dst,
 		WithValidation: validation,
+		ParserMode:     astMode,
 	}
 
 	return config.FillDefaults()
