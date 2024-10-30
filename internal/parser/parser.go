@@ -55,7 +55,7 @@ func ParseBuilderFile(config *cmd.Config) (string, error) {
 	}
 
 	if len(structHelper.Package) == 0 {
-		return consts.EMPTY_STR, consts.ErrSyntaxErr
+		return consts.EMPTY_STR, consts.ErrPackageNotFound
 	}
 
 	return structHelper.ToSource(), nil

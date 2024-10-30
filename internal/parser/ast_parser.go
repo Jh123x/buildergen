@@ -2,12 +2,13 @@ package parser
 
 import (
 	"bufio"
-	"github.com/Jh123x/buildergen/internal/cmd"
-	"github.com/Jh123x/buildergen/internal/consts"
-	"github.com/Jh123x/buildergen/internal/generation"
 	"go/ast"
 	"go/parser"
 	"go/token"
+
+	"github.com/Jh123x/buildergen/internal/cmd"
+	"github.com/Jh123x/buildergen/internal/consts"
+	"github.com/Jh123x/buildergen/internal/generation"
 )
 
 var _ parserFn = parseDataByAST
@@ -19,8 +20,8 @@ func parseDataByAST(config *cmd.Config, scanner *bufio.Reader, helper *generatio
 		return err
 	}
 
-	if len(config.Package) == 0 && astFile.Package.IsValid() {
-		config.Package = astFile.Name.Name
+	if len(helper.Package) == 0 && astFile.Package.IsValid() {
+		helper.Package = astFile.Name.Name
 	}
 
 	res, ok := findRequestedStructType(astFile, config.Name)

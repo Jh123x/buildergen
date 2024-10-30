@@ -54,10 +54,7 @@ func (c *Config) FillDefaults() (*Config, error) {
 		return nil, consts.ErrNotGoFile
 	}
 
-	if c.Package == "" {
-		c.Package = consts.EMPTY_STR
-	}
-
+	// Current default is empty string. Skip Package
 	if c.Destination == "" {
 		c.Destination = c.Source[:strings.LastIndex(c.Source, ".")] + consts.DEFAULT_BUILDER_SUFFIX
 	}

@@ -24,6 +24,7 @@ var (
 	ErrNotGoFile         = errors.New(ErrMsgNotGoFile)
 	ErrInvalidStructType = errors.New(ErrMsgInvalidStruct)
 	ErrSyntaxErr         = errors.New("syntax error")
+	ErrPackageNotFound   = errors.New("package not found")
 	ErrNotFound          = errors.New("target struct is not found")
 	ErrDone              = errors.New("done")
 	ErrInvalidConfigFile = errors.New(ErrMsgInvalidConfigFile)

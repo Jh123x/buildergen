@@ -50,7 +50,7 @@ func main() {
 				}
 
 				if err := generateFile(conf); err != nil {
-					panic(err)
+					fmt.Printf("[%s::%s] %s\n", conf.Source, conf.Name, err)
 				}
 			}()
 		}
