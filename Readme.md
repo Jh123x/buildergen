@@ -17,6 +17,9 @@ BuilderGen is a tool used for generating builders for Golang `structs`.
 
 ## QuickStart
 
+**Note:** There is also a way to use this package using a `yaml` file.
+For more information please take a look at the [Usage Docs](./docs/usage "Documentation for Usage")
+
 ### Step 1: Install this package
 
 ```bash
@@ -27,8 +30,6 @@ Install this package start using it
 
 ### Step 2: Use the package
 
-This is just 1 out of 2 ways to use this package.
-For the full list of usage visit docs [here](./docs/usage/Readme.md "Documentation for usage").
 Write the go generate comment as shown in the example below.
 
 ```go

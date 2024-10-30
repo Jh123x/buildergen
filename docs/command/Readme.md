@@ -10,6 +10,7 @@ The command line consists of 4 different flags.
 | `--pkg`      | Optional. The package of the generated file     | `buildergen --pkg examples`                 |
 | `--validate` | Optional. Validates the source file syntax      | `buildergen --validate`                     |
 | `--config`   | The configuration file used to generate         | `buildergen --config`                       |
+| `--mode`     | Optional. Defines mode of parsing               | `buildergen --mode`                         |
 
 ## Command line
 

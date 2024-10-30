@@ -3,8 +3,8 @@ package consts
 type Mode string
 
 const (
+	MODE_AST  Mode = "DEFAULT"
 	MODE_FAST Mode = "FAST"
-	MODE_AST       = "AST"
 )
 
 var (

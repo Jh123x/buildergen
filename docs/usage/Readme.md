@@ -67,8 +67,10 @@ configs:
   destination: ./internal/cmd/ttypes_builder_test.go
 - source: ./examples/benchmark/benchmark.go
   name: Data
+  mode: DEFAULT # Default mode uses golang built in AST
 - source: ./examples/person.go
   name: Person
+  mode: FAST # Fast mode uses custom parsers but may have more error edge cases. Use this when generation speed is important.
 ```
 
 This use case is more suitable for those who wants to build a builder for structs in other libraries but want to store
