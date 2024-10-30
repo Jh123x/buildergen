@@ -2,13 +2,12 @@ package parser
 
 import (
 	"bufio"
-	"go/ast"
-	"go/parser"
-	"go/token"
-
 	"github.com/Jh123x/buildergen/internal/cmd"
 	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/Jh123x/buildergen/internal/generation"
+	"go/ast"
+	"go/parser"
+	"go/token"
 )
 
 var _ parserFn = parseDataByAST

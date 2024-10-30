@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"path/filepath"
 	"testing"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
@@ -12,9 +13,6 @@ import (
 )
 
 func TestParseBuilderFile(t *testing.T) {
-	currDir, err := os.Getwd()
-	assert.Nil(t, err)
-
 	tests := map[string]struct {
 		config          *cmd.Config
 		expectedFileRes string
@@ -22,61 +20,69 @@ func TestParseBuilderFile(t *testing.T) {
 	}{
 		"simple struct": {
 			config: &cmd.Config{
-				Source:  currDir + "/data/nest.go",
+				Source:  filepath.Join("data", "nest.go"),
 				Package: "data",
 				Name:    "Test",
 			},
-			expectedFileRes: currDir + "/data/nest_expected_result.go",
+			expectedFileRes: filepath.Join("data", "nest_expected_result.go"),
 		},
 		"struct with first letter cap": {
 			config: &cmd.Config{
-				Source:  currDir + "/data/name_collision.go",
+				Source:  "/data/name_collision.go",
 				Package: "data",
 				Name:    "NameCollide",
 			},
-			expectedFileRes: currDir + "/data/name_expected_result.go",
+			expectedFileRes: "/data/name_expected_result.go",
 		},
 		"struct keyword": {
 			config: &cmd.Config{
-				Source:  currDir + "/data/keywords.go",
+				Source:  "/data/keywords.go",
 				Package: "data",
 				Name:    "Struct",
 			},
-			expectedFileRes: currDir + "/data/keywords_expected.go",
+			expectedFileRes: "/data/keywords_expected.go",
 		},
 		"benchmark struct": {
 			config: &cmd.Config{
-				Source:  path.Join(currDir, "..", "..", "examples", "benchmark", "benchmark.go"),
+				Source:  filepath.Join("..", "..", "examples", "benchmark", "benchmark.go"),
 				Package: "benchmark",
 				Name:    "Data",
 			},
-			expectedFileRes: path.Join(currDir, "..", "..", "examples", "benchmark", "benchmark_builder.go"),
+			expectedFileRes: path.Join("..", "..", "examples", "benchmark", "benchmark_builder.go"),
 		},
 		"internal file": {
 			config: &cmd.Config{
-				Source:  path.Join(currDir, "..", "cmd", "ttypes.go"),
+				Source:  filepath.Join("..", "cmd", "ttypes.go"),
 				Package: "cmd",
 				Name:    "Config",
 			},
-			expectedFileRes: path.Join(currDir, "..", "cmd", "ttypes_builder.go"),
+			expectedFileRes: filepath.Join("..", "cmd", "ttypes_builder.go"),
 		},
 		"internal file test": {
 			config: &cmd.Config{
-				Source:  path.Join(currDir, "..", "cmd", "ttypes_test.go"),
+				Source:  filepath.Join("..", "cmd", "ttypes_test.go"),
 				Package: "cmd",
 				Name:    "testCase",
 			},
-			expectedFileRes: path.Join(currDir, "..", "cmd", "ttypes_builder_test.go"),
+			expectedFileRes: filepath.Join("..", "cmd", "ttypes_builder_test.go"),
 		},
 	}
 
-	for _, mode := range consts.ALL_MODES {
-		for name, tc := range tests {
-			t.Run(fmt.Sprintf("%s_%s", name, mode), func(t *testing.T) {
-				if tc.config != nil {
-					tc.config.ParserMode = mode
-				}
+	currDir, err := os.Getwd()
+	assert.Nil(t, err)
 
+	for name, tc := range tests {
+		if tc.config != nil {
+			tc.config.Source = filepath.Join(currDir, tc.config.Source)
+			tc.expectedFileRes = filepath.Join(currDir, tc.expectedFileRes)
+		}
+
+		t.Log(tc.config.Source)
+		t.Log(tc.expectedFileRes)
+
+		for _, mode := range consts.ALL_MODES {
+			t.Run(fmt.Sprintf("%s_%s", name, mode), func(t *testing.T) {
+				tc.config.ParserMode = mode
 				res, err := ParseBuilderFile(tc.config)
 				expectedRes := consts.EMPTY_STR
 

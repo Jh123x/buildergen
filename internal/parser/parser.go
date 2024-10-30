@@ -2,6 +2,7 @@ package parser
 
 import (
 	"bufio"
+	"errors"
 	"go/parser"
 	"go/token"
 	"os"
@@ -36,6 +37,7 @@ func ParseBuilderFile(config *cmd.Config) (string, error) {
 
 	structHelper := &generation.StructGenHelper{
 		Package: config.Package,
+		Name:    config.Name,
 	}
 	scanner := bufio.NewReader(file)
 
@@ -44,7 +46,7 @@ func ParseBuilderFile(config *cmd.Config) (string, error) {
 		return "", consts.ErrInvalidParserMode
 	}
 
-	if err := parserFn(config, scanner, structHelper); err != nil && err != consts.ErrDone {
+	if err := parserFn(config, scanner, structHelper); err != nil && !errors.Is(err, consts.ErrDone) {
 		return "", err
 	}
 
