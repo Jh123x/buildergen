@@ -15,6 +15,7 @@ type testCase struct {
 	pkg            string
 	name           string
 	withValidation bool
+	parserMode     consts.Mode
 
 	expectedConfig *Config
 	expectedErr    error
@@ -27,6 +28,7 @@ const (
 	defaultName       = "TestCase"
 	notGoSrc          = "not_go_ext"
 	defaultValidation = false
+	defaultParserMode = consts.MODE_AST
 )
 
 var (
@@ -36,6 +38,7 @@ var (
 		Package:        defaultPkg,
 		Name:           defaultName,
 		WithValidation: defaultValidation,
+		ParserMode:     defaultParserMode,
 	}
 	defaultSuccessTestCase = &testCase{
 		src:            defaultSrc,
@@ -81,11 +84,19 @@ func TestNewConfig(t *testing.T) {
 					WithPackage(consts.EMPTY_STR).
 					Build(),
 			).Build(),
+		"with parser mode should take parser mode": NewtestCaseBuilder(defaultSuccessTestCase).
+			WithparserMode(consts.MODE_FAST).
+			WithexpectedConfig(
+				NewConfigBuilder(defaultConfig).
+					WithParserMode(consts.MODE_FAST).
+					Build(),
+			).
+			Build(),
 	}
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			cfg, err := NewConfig(tc.src, tc.dst, tc.pkg, tc.name, tc.withValidation)
+			cfg, err := NewConfig(tc.src, tc.dst, tc.pkg, tc.name, tc.withValidation, tc.parserMode)
 			assert.Equal(t, tc.expectedConfig, cfg)
 			assert.Equal(t, tc.expectedErr, err)
 		})
