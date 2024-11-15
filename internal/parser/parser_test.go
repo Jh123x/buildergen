@@ -28,19 +28,19 @@ func TestParseBuilderFile(t *testing.T) {
 		},
 		"struct with first letter cap": {
 			config: &cmd.Config{
-				Source:  "/data/name_collision.go",
+				Source:  filepath.Join("data", "name_collision.go"),
 				Package: "data",
 				Name:    "NameCollide",
 			},
-			expectedFileRes: "/data/name_expected_result.go",
+			expectedFileRes: filepath.Join("data", "name_expected_result.go"),
 		},
 		"struct keyword": {
 			config: &cmd.Config{
-				Source:  "/data/keywords.go",
+				Source:  filepath.Join("data", "keywords.go"),
 				Package: "data",
 				Name:    "Struct",
 			},
-			expectedFileRes: "/data/keywords_expected.go",
+			expectedFileRes: filepath.Join("data", "keywords_expected.go"),
 		},
 		"benchmark struct": {
 			config: &cmd.Config{
