@@ -107,6 +107,14 @@ func Test_mergePackage(t *testing.T) {
 			expectedRes: consts.EMPTY_STR,
 			expectedErr: nil,
 		},
+		"no package found": {
+			structs: []*generation.StructGenHelper{
+				{Name: "test"},
+				{Name: "test2"},
+			},
+			expectedRes: consts.EMPTY_STR,
+			expectedErr: errors.New("no packages found within structs: test, test2"),
+		},
 		"only 1 struct": {
 			structs: []*generation.StructGenHelper{
 				{
