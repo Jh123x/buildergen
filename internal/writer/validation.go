@@ -12,12 +12,14 @@ import (
 )
 
 func mergeImports(structs []*generation.StructGenHelper) ([]*generation.Import, error) {
+	structs = utils.FilterNil(structs)
 	imports := make(map[string]importHelper, 1000)
 
 	for _, s := range structs {
 		if s == nil {
 			continue
 		}
+
 		for _, i := range s.Imports {
 			path := i.Path
 			prevImport, ok := imports[path]
