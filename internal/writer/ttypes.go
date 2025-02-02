@@ -1,8 +1,10 @@
 package writer
 
 import (
+	"sort"
 	"strings"
 
+	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/Jh123x/buildergen/internal/generation"
 	"github.com/Jh123x/buildergen/internal/utils"
 )
@@ -23,19 +25,39 @@ type writeHelper struct {
 func (w *writeHelper) ToSource() string {
 	builder := strings.Builder{}
 
+	builder.WriteString(consts.BUILD_HEADER)
+	builder.WriteString("\n")
 	builder.WriteString("package ")
 	builder.WriteString(w.pkg)
-	builder.WriteString("\n\nimport (\n")
 
-	for _, i := range w.imports {
-		builder.WriteString("\t\"")
-		builder.WriteString(i.ToImport())
-		builder.WriteString("\"\n")
+	switch len(w.imports) {
+	case 1:
+		builder.WriteString("\n\nimport ")
+		builder.WriteString(w.imports[0].ToImport())
+		builder.WriteString("\n\n")
+	case 0:
+		break
+	default:
+		builder.WriteString("\n\nimport ")
+		builder.WriteString("(\n")
+
+		importAcc := utils.Map(w.imports, func(i *generation.Import) string { return i.ToImport() })
+		sort.Strings(importAcc)
+
+		for _, importStr := range importAcc {
+			builder.WriteString("\t")
+			builder.WriteString(importStr)
+			builder.WriteString("\n")
+		}
+		builder.WriteString(")")
+		builder.WriteString("\n\n")
 	}
-	builder.WriteString(")\n\n")
 
-	for _, s := range w.structs {
+	for idx, s := range w.structs {
 		builder.WriteString(s.BuildStruct())
+		if idx < len(w.structs)-1 {
+			builder.WriteString("\n")
+		}
 	}
 
 	return builder.String()

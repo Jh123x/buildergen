@@ -54,12 +54,12 @@ type StructGenHelper struct {
 	// Used Internally
 	maxFieldLen  int
 	maxTypeLen   int
-	usedPackages map[string]consts.Empty
+	usedPackages utils.Set[string]
 }
 
-func (s *StructGenHelper) ToSource() string {
+func (s *StructGenHelper) preprocess() {
 	if len(s.usedPackages) == 0 {
-		s.usedPackages = make(map[string]consts.Empty, len(s.Fields))
+		s.usedPackages = make(utils.Set[string], len(s.Fields))
 
 		for _, f := range s.Fields {
 			pkgName := f.GetUsedPackageName()
@@ -71,6 +71,21 @@ func (s *StructGenHelper) ToSource() string {
 		}
 	}
 
+	if s.maxFieldLen == 0 {
+		for _, f := range s.Fields {
+			if len(f.Name) > s.maxFieldLen {
+				s.maxFieldLen = len(f.Name)
+			}
+
+			if len(f.Type) > s.maxTypeLen {
+				s.maxTypeLen = len(f.Type)
+			}
+		}
+	}
+}
+
+func (s *StructGenHelper) ToSource() string {
+	s.preprocess()
 	srcBuilder := strings.Builder{}
 	srcBuilder.WriteString(consts.BUILD_HEADER)
 	srcBuilder.WriteString("\n")
@@ -81,7 +96,8 @@ func (s *StructGenHelper) ToSource() string {
 	if len(s.usedPackages) > 0 {
 		importBuffer := make([]string, 0, len(s.Imports))
 		for _, importVal := range s.Imports {
-			if _, ok := s.usedPackages[importVal.GetName()]; !ok {
+			importName := importVal.GetName()
+			if !s.usedPackages.Has(importName) {
 				continue
 			}
 
@@ -90,7 +106,7 @@ func (s *StructGenHelper) ToSource() string {
 
 		if len(importBuffer) == 1 {
 			srcBuilder.WriteString("\n\nimport ")
-			srcBuilder.WriteString(importBuffer[0])
+			srcBuilder.WriteString(s.Imports[0].ToImport())
 		}
 
 		if len(importBuffer) > 1 {
@@ -111,18 +127,7 @@ func (s *StructGenHelper) ToSource() string {
 }
 
 func (s *StructGenHelper) BuildStruct() string {
-	if s.maxFieldLen == 0 {
-		for _, f := range s.Fields {
-			if len(f.Name) > s.maxFieldLen {
-				s.maxFieldLen = len(f.Name)
-			}
-
-			if len(f.Type) > s.maxTypeLen {
-				s.maxTypeLen = len(f.Type)
-			}
-		}
-	}
-
+	s.preprocess()
 	srcBuilder := strings.Builder{}
 	srcBuilder.WriteString("type ")
 	srcBuilder.WriteString(s.Name)

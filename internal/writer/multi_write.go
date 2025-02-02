@@ -6,6 +6,7 @@ import (
 )
 
 func MultiFileWrite(path string, structs ...*generation.StructGenHelper) error {
+	structs = utils.FilterNil(structs)
 	switch len(structs) {
 	case 0:
 		return nil
@@ -14,8 +15,6 @@ func MultiFileWrite(path string, structs ...*generation.StructGenHelper) error {
 	default:
 		break
 	}
-
-	structs = utils.FilterNil(structs)
 
 	pkgName, err := mergePackages(structs)
 	if err != nil {
