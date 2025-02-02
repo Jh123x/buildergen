@@ -2,6 +2,7 @@ package writer
 
 import (
 	"fmt"
+	"path"
 	"strings"
 
 	"github.com/Jh123x/buildergen/internal/consts"
@@ -42,8 +43,12 @@ func mergeImports(structs []*generation.StructGenHelper) ([]*generation.Import, 
 	}
 
 	acc := make([]*generation.Import, 0, len(imports))
-	for path, h := range imports {
-		acc = append(acc, &generation.Import{Path: path, Name: h.importName})
+	for importPath, h := range imports {
+		imp := &generation.Import{Path: importPath}
+		if path.Base(importPath[1:len(importPath)-1]) != h.importName {
+			imp.Name = h.importName
+		}
+		acc = append(acc, imp)
 	}
 
 	return acc, nil
