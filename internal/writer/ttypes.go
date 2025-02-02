@@ -23,14 +23,14 @@ type writeHelper struct {
 func (w *writeHelper) ToSource() string {
 	builder := strings.Builder{}
 
-	builder.WriteString("package")
+	builder.WriteString("package ")
 	builder.WriteString(w.pkg)
-	builder.WriteString("\n\nimport(\n")
+	builder.WriteString("\n\nimport (\n")
 
 	for _, i := range w.imports {
-		builder.WriteString("\t")
+		builder.WriteString("\t\"")
 		builder.WriteString(i.ToImport())
-		builder.WriteString("\n")
+		builder.WriteString("\"\n")
 	}
 	builder.WriteString(")\n\n")
 
