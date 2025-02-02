@@ -22,6 +22,7 @@ func Test_mergeImports(t *testing.T) {
 		},
 		"only 1 struct": {
 			structs: []*generation.StructGenHelper{
+				nil,
 				{
 					Imports: []*generation.Import{
 						{Path: `"test.com/test/test"`},
@@ -34,6 +35,7 @@ func Test_mergeImports(t *testing.T) {
 		},
 		"multiple non-conflict should combine": {
 			structs: []*generation.StructGenHelper{
+				nil,
 				{
 					Imports: []*generation.Import{
 						{Name: "test7", Path: `"test.com/test/test"`},
@@ -61,6 +63,7 @@ func Test_mergeImports(t *testing.T) {
 		},
 		"multiple conflict should error": {
 			structs: []*generation.StructGenHelper{
+				nil,
 				{
 					Name: "test",
 					Imports: []*generation.Import{
