@@ -36,12 +36,12 @@ func Test_mergeImports(t *testing.T) {
 			structs: []*generation.StructGenHelper{
 				{
 					Imports: []*generation.Import{
-						{Name: "test", Path: `"test.com/test/test"`},
+						{Name: "test7", Path: `"test.com/test/test"`},
 					},
 				},
 				{
 					Imports: []*generation.Import{
-						{Path: `"test.com/test/test"`},
+						{Name: "test7", Path: `"test.com/test/test"`},
 						{Path: `"test.com/test/test2"`},
 					},
 				},
@@ -53,7 +53,7 @@ func Test_mergeImports(t *testing.T) {
 				},
 			},
 			expectedImports: []*generation.Import{
-				{Path: `"test.com/test/test"`},
+				{Name: "test7", Path: `"test.com/test/test"`},
 				{Path: `"test.com/test/test2"`},
 				{Path: `"test.com/test/test3"`},
 				{Path: `"test.com/test/test5"`},
