@@ -40,3 +40,62 @@ func TestFilter(t *testing.T) {
 		})
 	}
 }
+
+func TestMap(t *testing.T) {
+	tests := map[string]struct {
+		lst         []string
+		mapper      func(string) string
+		expectedRes []string
+	}{
+		"empty": {
+			lst:         nil,
+			mapper:      func(s string) string { return s + s },
+			expectedRes: []string{},
+		},
+		"no mapper": {
+			lst:         []string{"1", "2", "3"},
+			mapper:      func(s string) string { return s },
+			expectedRes: []string{"1", "2", "3"},
+		},
+		"not empty": {
+			lst:         []string{"1", "2", "3"},
+			mapper:      func(s string) string { return s + s },
+			expectedRes: []string{"11", "22", "33"},
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, tc.expectedRes, Map(tc.lst, tc.mapper))
+		})
+	}
+}
+
+func TestFilterNil(t *testing.T) {
+	no1 := 0
+	no2 := 1
+
+	tests := map[string]struct {
+		lst         []*int
+		expectedRes []*int
+	}{
+		"empty": {
+			lst:         nil,
+			expectedRes: []*int{},
+		},
+		"has nil": {
+			lst:         []*int{&no1, &no2, nil, &no1, nil, &no2},
+			expectedRes: []*int{&no1, &no2, &no1, &no2},
+		},
+		"has no nil": {
+			lst:         []*int{&no1, &no2, &no1, &no2},
+			expectedRes: []*int{&no1, &no2, &no1, &no2},
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, tc.expectedRes, FilterNil(tc.lst))
+		})
+	}
+}
