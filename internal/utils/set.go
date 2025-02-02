@@ -4,8 +4,13 @@ import "github.com/Jh123x/buildergen/internal/consts"
 
 type Set[T comparable] map[T]consts.Empty
 
-func NewSet[T comparable]() Set[T] {
-	return make(Set[T], 0)
+func NewSet[T comparable](elems ...T) Set[T] {
+	s := make(Set[T], 0)
+	for _, e := range elems {
+		s.Add(e)
+	}
+
+	return s
 }
 
 func (s Set[T]) Add(v T) {
@@ -17,7 +22,7 @@ func (s Set[T]) Has(v T) bool {
 	return ok
 }
 
-func (s Set[T]) Len(v T) int {
+func (s Set[T]) Len() int {
 	return len(s)
 }
 
