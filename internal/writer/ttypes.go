@@ -20,6 +20,9 @@ type writeHelper struct {
 
 	// Imports and Package filed will be ignored.
 	structs []*generation.StructGenHelper
+
+	// Used Internally
+	usedPackages utils.Set[string]
 }
 
 func (w *writeHelper) ToSource() string {

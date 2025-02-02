@@ -3,7 +3,7 @@ configs:
   name: Config
 - source: ./internal/cmd/ttypes_test.go
   name: testCase
-  # mode: DEFAULT (This is the default mode)
+  mode: DEFAULT # This is the default mode
   destination: ./internal/cmd/ttypes_builder_test.go
 - source: ./examples/benchmark/benchmark.go
   name: Data

@@ -18,8 +18,8 @@ func Test_writeHelper(t *testing.T) {
 			writeHelper: &writeHelper{
 				pkg: "data",
 				imports: []*generation.Import{
-					{Path: "strings"},
-					{Path: "github.com/Jh123x/buildergen/internal/generation"},
+					{Path: `"strings"`},
+					{Path: `"github.com/Jh123x/buildergen/internal/generation"`},
 				},
 				structs: []*generation.StructGenHelper{
 					{
@@ -30,7 +30,7 @@ func Test_writeHelper(t *testing.T) {
 							{Name: "test2", Type: "strings.Builder", Tags: ""},
 						},
 						Imports: []*generation.Import{
-							{Name: "", Path: "github.com/test/test"},
+							{Name: "", Path: `"github.com/test/test"`},
 						},
 					},
 				},

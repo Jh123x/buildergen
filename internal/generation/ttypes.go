@@ -57,19 +57,22 @@ type StructGenHelper struct {
 	usedPackages utils.Set[string]
 }
 
-func (s *StructGenHelper) preprocess() {
-	if len(s.usedPackages) == 0 {
-		s.usedPackages = make(utils.Set[string], len(s.Fields))
+func (s *StructGenHelper) GetUsedPackages() utils.Set[string] {
+	s.usedPackages = make(utils.Set[string], len(s.Fields))
 
-		for _, f := range s.Fields {
-			pkgName := f.GetUsedPackageName()
-			if len(pkgName) == 0 {
-				continue
-			}
-
-			s.usedPackages[pkgName] = consts.Empty{}
+	for _, f := range s.Fields {
+		pkgName := f.GetUsedPackageName()
+		if len(pkgName) == 0 {
+			continue
 		}
+
+		s.usedPackages.Add(pkgName)
 	}
+	return s.usedPackages
+}
+
+func (s *StructGenHelper) preprocess() {
+	_ = s.GetUsedPackages()
 
 	if s.maxFieldLen == 0 {
 		for _, f := range s.Fields {
@@ -106,7 +109,7 @@ func (s *StructGenHelper) ToSource() string {
 
 		if len(importBuffer) == 1 {
 			srcBuilder.WriteString("\n\nimport ")
-			srcBuilder.WriteString(s.Imports[0].ToImport())
+			srcBuilder.WriteString(importBuffer[0])
 		}
 
 		if len(importBuffer) > 1 {

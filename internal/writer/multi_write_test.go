@@ -35,7 +35,7 @@ func TestMultiFileWrite(t *testing.T) {
 			expectedResPath: filepath.Join("..", "parser", "data", "nest_expected_result.go"),
 		},
 		"2 simple struct": {
-			path: "simple_struct.go",
+			path: "simple_struct_2.go",
 			structs: []*generation.StructGenHelper{
 				nil,
 				{
@@ -65,14 +65,17 @@ func TestMultiFileWrite(t *testing.T) {
 		},
 	}
 
+	currDir, err := os.Getwd()
+	assert.Nil(t, err)
+
+	tmpDir := os.TempDir()
+	writeDir := filepath.Join(tmpDir, "test_write_to_multi_file")
+
+	assert.Nil(t, os.Mkdir(writeDir, 0644))
+	t.Cleanup(func() { assert.Nil(t, os.RemoveAll(writeDir)) })
+
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			tmpDir := os.TempDir()
-			writeDir := filepath.Join(tmpDir, "test_dir")
-
-			assert.Nil(t, os.Mkdir(filepath.Join(tmpDir, "test_dir"), 0644))
-			defer func() { assert.Nil(t, os.RemoveAll(writeDir)) }()
-
 			filePath := filepath.Join(writeDir, tc.path)
 			assert.Equal(t, tc.expectedErr, MultiFileWrite(filePath, tc.structs...))
 
@@ -80,7 +83,7 @@ func TestMultiFileWrite(t *testing.T) {
 				return
 			}
 
-			expectedData, err := os.ReadFile(tc.expectedResPath)
+			expectedData, err := os.ReadFile(filepath.Join(currDir, tc.expectedResPath))
 			assert.Nil(t, err)
 
 			data, err := os.ReadFile(filePath)

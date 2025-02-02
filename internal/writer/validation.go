@@ -20,9 +20,13 @@ func mergeImports(structs []*generation.StructGenHelper) ([]*generation.Import, 
 			continue
 		}
 
+		usedPackages := s.GetUsedPackages()
 		for _, i := range s.Imports {
 			path := i.Path
 			prevImport, ok := imports[path]
+			if !usedPackages.Has(i.GetName()) {
+				continue
+			}
 			if ok && prevImport.importName != i.GetName() {
 				structsNames := prevImport.structNames.ToList()
 				sort.Strings(structsNames)
@@ -69,13 +73,13 @@ func mergePackages(structs []*generation.StructGenHelper) (string, error) {
 		return structs[0].Package, nil
 	}
 
-	pkgSet := make(map[string]consts.Empty, len(structs))
+	pkgSet := make(utils.Set[string], len(structs))
 	for _, s := range structs {
 		if s == nil || s.Package == "" {
 			continue
 		}
 
-		pkgSet[s.Package] = consts.Empty{}
+		pkgSet.Add(s.Package)
 	}
 
 	switch len(pkgSet) {
@@ -95,10 +99,8 @@ func mergePackages(structs []*generation.StructGenHelper) (string, error) {
 		break
 	}
 
-	data := make([]string, 0, len(pkgSet))
-	for n := range pkgSet {
-		data = append(data, n)
-	}
+	data := pkgSet.ToList()
+	sort.Strings(data)
 
 	return consts.EMPTY_STR, fmt.Errorf(
 		"multiple packages found within the same file: %s",

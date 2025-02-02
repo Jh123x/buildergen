@@ -27,6 +27,9 @@ func Test_mergeImports(t *testing.T) {
 					Imports: []*generation.Import{
 						{Path: `"test.com/test/test"`},
 					},
+					Fields: []*generation.Field{
+						{Name: "test", Type: "test.Test"},
+					},
 				},
 			},
 			expectedImports: []*generation.Import{
@@ -40,17 +43,30 @@ func Test_mergeImports(t *testing.T) {
 					Imports: []*generation.Import{
 						{Name: "test7", Path: `"test.com/test/test"`},
 					},
+
+					Fields: []*generation.Field{
+						{Name: "test", Type: "test7.Test"},
+					},
 				},
 				{
 					Imports: []*generation.Import{
 						{Name: "test7", Path: `"test.com/test/test"`},
 						{Path: `"test.com/test/test2"`},
 					},
+
+					Fields: []*generation.Field{
+						{Name: "test", Type: "test7.Test"},
+						{Name: "test2", Type: "test2.Test"},
+					},
 				},
 				{
 					Imports: []*generation.Import{
 						{Path: `"test.com/test/test3"`},
 						{Path: `"test.com/test/test5"`},
+					},
+					Fields: []*generation.Field{
+						{Name: "test", Type: "test3.Test"},
+						{Name: "test2", Type: "test5.Test"},
 					},
 				},
 			},
@@ -69,6 +85,9 @@ func Test_mergeImports(t *testing.T) {
 					Imports: []*generation.Import{
 						{Name: "test_conf", Path: `"test.com/test/test"`},
 					},
+					Fields: []*generation.Field{
+						{Name: "test", Type: "test_conf.Test"},
+					},
 				},
 				{
 					Name: "test1",
@@ -76,12 +95,21 @@ func Test_mergeImports(t *testing.T) {
 						{Path: `"test.com/test/test"`},
 						{Path: `"test.com/test/test2"`},
 					},
+					Fields: []*generation.Field{
+						{Name: "test", Type: "test.Test"},
+						{Name: "test2", Type: "test2.Test"},
+					},
 				},
 				{
 					Name: "test2",
 					Imports: []*generation.Import{
 						{Path: `"test.com/test/test3"`},
 						{Path: `"test.com/test/test5"`},
+						{Path: `"test.com/test/test6"`},
+					},
+					Fields: []*generation.Field{
+						{Name: "test", Type: "test3.Test"},
+						{Name: "test2", Type: "test5.Test"},
 					},
 				},
 			},
