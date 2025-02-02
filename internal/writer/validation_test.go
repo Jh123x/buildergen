@@ -4,6 +4,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/Jh123x/buildergen/internal/generation"
 	"github.com/stretchr/testify/assert"
 )
@@ -91,6 +92,54 @@ func Test_mergeImports(t *testing.T) {
 			res, err := mergeImports(tc.structs)
 			assert.Equal(t, tc.expectedErr, err)
 			assert.ElementsMatch(t, tc.expectedImports, res)
+		})
+	}
+}
+
+func Test_mergePackage(t *testing.T) {
+	tests := map[string]struct {
+		structs     []*generation.StructGenHelper
+		expectedRes string
+		expectedErr error
+	}{
+		"empty": {
+			structs:     nil,
+			expectedRes: consts.EMPTY_STR,
+			expectedErr: nil,
+		},
+		"only 1 struct": {
+			structs: []*generation.StructGenHelper{
+				{
+					Name:    "test",
+					Package: "test_package",
+				},
+			},
+			expectedRes: "test_package",
+		},
+		"multiple non-conflict package": {
+			structs: []*generation.StructGenHelper{
+				{Name: "test", Package: "test_package"},
+				{Name: "test2", Package: "test_package"},
+				{Name: "test3", Package: "test_package"},
+			},
+			expectedRes: "test_package",
+		},
+		"multiple conflict package": {
+			structs: []*generation.StructGenHelper{
+				{Name: "test", Package: "test_package"},
+				{Name: "test2", Package: "test_package2"},
+				{Name: "test3", Package: "test_package"},
+			},
+			expectedRes: consts.EMPTY_STR,
+			expectedErr: errors.New("multiple packages found within the same file: test_package, test_package2"),
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			res, err := mergePackages(tc.structs)
+			assert.Equal(t, tc.expectedErr, err)
+			assert.Equal(t, tc.expectedRes, res)
 		})
 	}
 }
