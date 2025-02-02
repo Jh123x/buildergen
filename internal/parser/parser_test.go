@@ -93,7 +93,7 @@ func TestParseBuilderFile(t *testing.T) {
 				}
 
 				assert.Equal(t, tc.expectedErr, err)
-				assert.Equal(t, expectedRes, res)
+				assert.Equal(t, expectedRes, res.ToSource())
 			})
 		}
 	}

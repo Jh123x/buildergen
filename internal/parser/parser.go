@@ -14,25 +14,18 @@ import (
 
 type parserFn func(config *cmd.Config, scanner *bufio.Reader, helper *generation.StructGenHelper) error
 
-var (
-	parserMode = map[consts.Mode]parserFn{
-		consts.MODE_FAST: parseDataByCustomParser,
-		consts.MODE_AST:  parseDataByAST,
-	}
-)
-
 // ParseBuilderFile creates a file based on config and returns the first encountered error.
-func ParseBuilderFile(config *cmd.Config) (string, error) {
+func ParseBuilderFile(config *cmd.Config) (*generation.StructGenHelper, error) {
 	if config.WithValidation {
 		fset := token.NewFileSet()
 		if _, err := parser.ParseFile(fset, config.Source, nil, 0); err != nil {
-			return consts.EMPTY_STR, err
+			return nil, err
 		}
 	}
 
 	file, err := os.Open(config.Source)
 	if err != nil {
-		return consts.EMPTY_STR, err
+		return nil, err
 	}
 
 	structHelper := &generation.StructGenHelper{
@@ -41,22 +34,33 @@ func ParseBuilderFile(config *cmd.Config) (string, error) {
 	}
 	scanner := bufio.NewReader(file)
 
-	parserFn, ok := parserMode[config.ParserMode]
-	if !ok {
-		return "", consts.ErrInvalidParserMode
+	parserFn := getParserMode(config.ParserMode)
+	if parserFn == nil {
+		return nil, consts.ErrInvalidParserMode
 	}
 
 	if err := parserFn(config, scanner, structHelper); err != nil && !errors.Is(err, consts.ErrDone) {
-		return "", err
+		return nil, err
 	}
 
 	if len(structHelper.Name) == 0 {
-		return consts.EMPTY_STR, consts.ErrNoStructsFound
+		return nil, consts.ErrNoStructsFound
 	}
 
 	if len(structHelper.Package) == 0 {
-		return consts.EMPTY_STR, consts.ErrPackageNotFound
+		return nil, consts.ErrPackageNotFound
 	}
 
-	return structHelper.ToSource(), nil
+	return structHelper, nil
+}
+
+func getParserMode(parserMode consts.Mode) parserFn {
+	switch parserMode {
+	case consts.MODE_AST:
+		return parseDataByAST
+	case consts.MODE_FAST:
+		return parseDataByCustomParser
+	default:
+		return nil
+	}
 }

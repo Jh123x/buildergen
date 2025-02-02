@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/Jh123x/buildergen/internal/consts"
+	"github.com/Jh123x/buildergen/internal/generation"
 )
 
 type PrinterFn func(string, ...any) (int, error)
@@ -20,6 +21,12 @@ type Config struct {
 	Name           string      `yaml:"name"`
 	WithValidation bool        `yaml:"with-validation"`
 	ParserMode     consts.Mode `yaml:"mode"`
+}
+
+type ConfigChan struct {
+	StructHelper *generation.StructGenHelper
+	Destination  string
+	Err          error
 }
 
 // NewConfig creates a new config with the given arguments.

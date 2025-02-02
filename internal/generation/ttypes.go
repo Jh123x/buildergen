@@ -45,8 +45,6 @@ func (f *Field) GetUsedPackageName() string {
 	return strings.TrimPrefix(name, "*")
 }
 
-type empty struct{}
-
 type StructGenHelper struct {
 	Name    string
 	Package string
@@ -56,7 +54,7 @@ type StructGenHelper struct {
 	// Used Internally
 	maxFieldLen  int
 	maxTypeLen   int
-	usedPackages map[string]empty
+	usedPackages map[string]consts.Empty
 }
 
 func (s *StructGenHelper) ToSource() string {
@@ -73,7 +71,7 @@ func (s *StructGenHelper) ToSource() string {
 	}
 
 	if len(s.usedPackages) == 0 {
-		s.usedPackages = make(map[string]empty, len(s.Fields))
+		s.usedPackages = make(map[string]consts.Empty, len(s.Fields))
 
 		for _, f := range s.Fields {
 			pkgName := f.GetUsedPackageName()
@@ -81,7 +79,7 @@ func (s *StructGenHelper) ToSource() string {
 				continue
 			}
 
-			s.usedPackages[pkgName] = empty{}
+			s.usedPackages[pkgName] = consts.Empty{}
 		}
 	}
 
@@ -118,7 +116,15 @@ func (s *StructGenHelper) ToSource() string {
 		}
 	}
 
-	srcBuilder.WriteString("\n\ntype ")
+	srcBuilder.WriteString("\n\n")
+	srcBuilder.WriteString(s.BuildStruct())
+
+	return srcBuilder.String()
+}
+
+func (s *StructGenHelper) BuildStruct() string {
+	srcBuilder := strings.Builder{}
+	srcBuilder.WriteString("type ")
 	srcBuilder.WriteString(s.Name)
 	srcBuilder.WriteString("Builder struct {\n")
 	for _, field := range s.Fields {
