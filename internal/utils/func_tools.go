@@ -1,10 +1,6 @@
 package utils
 
 func Filter[T any](lst []T, predicate func(T) bool) []T {
-	if predicate == nil {
-		return lst
-	}
-
 	result := make([]T, 0, len(lst))
 
 	for _, item := range lst {
