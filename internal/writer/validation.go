@@ -3,6 +3,7 @@ package writer
 import (
 	"fmt"
 	"path"
+	"sort"
 	"strings"
 
 	"github.com/Jh123x/buildergen/internal/consts"
@@ -21,10 +22,13 @@ func mergeImports(structs []*generation.StructGenHelper) ([]*generation.Import, 
 			path := i.Path
 			prevImport, ok := imports[path]
 			if ok && prevImport.importName != i.GetName() {
+				structsNames := prevImport.structNames.ToList()
+				sort.Strings(structsNames)
+
 				return nil, fmt.Errorf(
 					"import names for package='%s' are inconsistent between %s (%s) and %s (%s)",
 					path,
-					strings.Join(prevImport.structNames.ToList(), ", "),
+					strings.Join(structsNames, ", "),
 					prevImport.importName,
 					s.Name,
 					i.GetName(),
@@ -65,7 +69,7 @@ func mergePackages(structs []*generation.StructGenHelper) (string, error) {
 
 	pkgSet := make(map[string]consts.Empty, len(structs))
 	for _, s := range structs {
-		if s == nil {
+		if s == nil || s.Package == "" {
 			continue
 		}
 
@@ -74,14 +78,14 @@ func mergePackages(structs []*generation.StructGenHelper) (string, error) {
 
 	switch len(pkgSet) {
 	case 0:
+		structNames := utils.Map(
+			structs,
+			func(s *generation.StructGenHelper) string { return s.Name },
+		)
+		sort.Strings(structNames)
 		return consts.EMPTY_STR, fmt.Errorf(
 			"no packages found within structs: %s",
-			strings.Join(
-				utils.Map(
-					structs,
-					func(s *generation.StructGenHelper) string { return s.Name }),
-				", ",
-			),
+			strings.Join(structNames, ", "),
 		)
 	case 1:
 		return structs[0].Package, nil
