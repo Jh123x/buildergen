@@ -29,14 +29,5 @@ func Map[T, R any](lst []T, mapper func(T) R) []R {
 }
 
 func FilterNil[T any](lst []*T) []*T {
-	acc := make([]*T, 0, len(lst))
-	for _, v := range lst {
-		if v == nil {
-			continue
-		}
-
-		acc = append(acc, v)
-	}
-
-	return acc
+	return Filter(lst, func(v *T) bool { return v != nil })
 }
