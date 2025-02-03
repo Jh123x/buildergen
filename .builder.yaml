@@ -3,11 +3,14 @@ configs:
   name: Config
 - source: ./internal/cmd/ttypes_test.go
   name: testCase
-  # mode: DEFAULT (This is the default mode)
+  mode: DEFAULT # This is the default mode
   destination: ./internal/cmd/ttypes_builder_test.go
 - source: ./examples/benchmark/benchmark.go
   name: Data
   mode: DEFAULT
 - source: ./examples/person.go
   name: Person
+  mode: FAST # This mode is faster but may have errors
+- source: ./examples/person.go
+  name: UnRelated
   mode: FAST # This mode is faster but may have errors

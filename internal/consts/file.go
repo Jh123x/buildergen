@@ -2,7 +2,7 @@ package consts
 
 const (
 	PARAM_NAME = "BuilderGen"
-	VERSION    = "v0.2.1"
+	VERSION    = "v0.3.0"
 
 	DEFAULT_BUILDER_SUFFIX = "_builder.go"
 
@@ -10,4 +10,6 @@ const (
 	BUILD_PACKAGE = "package"
 
 	DEFAULT_TRIM = "\n\r\t "
+
+	DEFAULT_TEMP_DIR = "."
 )

@@ -45,8 +45,6 @@ func (f *Field) GetUsedPackageName() string {
 	return strings.TrimPrefix(name, "*")
 }
 
-type empty struct{}
-
 type StructGenHelper struct {
 	Name    string
 	Package string
@@ -56,10 +54,26 @@ type StructGenHelper struct {
 	// Used Internally
 	maxFieldLen  int
 	maxTypeLen   int
-	usedPackages map[string]empty
+	usedPackages utils.Set[string]
 }
 
-func (s *StructGenHelper) ToSource() string {
+func (s *StructGenHelper) GetUsedPackages() utils.Set[string] {
+	s.usedPackages = make(utils.Set[string], len(s.Fields))
+
+	for _, f := range s.Fields {
+		pkgName := f.GetUsedPackageName()
+		if len(pkgName) == 0 {
+			continue
+		}
+
+		s.usedPackages.Add(pkgName)
+	}
+	return s.usedPackages
+}
+
+func (s *StructGenHelper) preprocess() {
+	_ = s.GetUsedPackages()
+
 	if s.maxFieldLen == 0 {
 		for _, f := range s.Fields {
 			if len(f.Name) > s.maxFieldLen {
@@ -71,20 +85,10 @@ func (s *StructGenHelper) ToSource() string {
 			}
 		}
 	}
+}
 
-	if len(s.usedPackages) == 0 {
-		s.usedPackages = make(map[string]empty, len(s.Fields))
-
-		for _, f := range s.Fields {
-			pkgName := f.GetUsedPackageName()
-			if len(pkgName) == 0 {
-				continue
-			}
-
-			s.usedPackages[pkgName] = empty{}
-		}
-	}
-
+func (s *StructGenHelper) ToSource() string {
+	s.preprocess()
 	srcBuilder := strings.Builder{}
 	srcBuilder.WriteString(consts.BUILD_HEADER)
 	srcBuilder.WriteString("\n")
@@ -95,7 +99,8 @@ func (s *StructGenHelper) ToSource() string {
 	if len(s.usedPackages) > 0 {
 		importBuffer := make([]string, 0, len(s.Imports))
 		for _, importVal := range s.Imports {
-			if _, ok := s.usedPackages[importVal.GetName()]; !ok {
+			importName := importVal.GetName()
+			if !s.usedPackages.Has(importName) {
 				continue
 			}
 
@@ -118,7 +123,16 @@ func (s *StructGenHelper) ToSource() string {
 		}
 	}
 
-	srcBuilder.WriteString("\n\ntype ")
+	srcBuilder.WriteString("\n\n")
+	srcBuilder.WriteString(s.BuildStruct())
+
+	return srcBuilder.String()
+}
+
+func (s *StructGenHelper) BuildStruct() string {
+	s.preprocess()
+	srcBuilder := strings.Builder{}
+	srcBuilder.WriteString("type ")
 	srcBuilder.WriteString(s.Name)
 	srcBuilder.WriteString("Builder struct {\n")
 	for _, field := range s.Fields {

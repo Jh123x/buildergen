@@ -3,8 +3,8 @@ package parser
 import (
 	"fmt"
 	"os"
-	"path"
 	"path/filepath"
+	"reflect"
 	"testing"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
@@ -48,7 +48,7 @@ func TestParseBuilderFile(t *testing.T) {
 				Package: "benchmark",
 				Name:    "Data",
 			},
-			expectedFileRes: path.Join("..", "..", "examples", "benchmark", "benchmark_builder.go"),
+			expectedFileRes: filepath.Join("..", "..", "examples", "benchmark", "benchmark_builder.go"),
 		},
 		"internal file": {
 			config: &cmd.Config{
@@ -93,8 +93,37 @@ func TestParseBuilderFile(t *testing.T) {
 				}
 
 				assert.Equal(t, tc.expectedErr, err)
-				assert.Equal(t, expectedRes, res)
+				assert.Equal(t, expectedRes, res.ToSource())
 			})
 		}
+	}
+}
+
+func Test_getParserMode(t *testing.T) {
+	tests := map[string]struct {
+		parserMode  consts.Mode
+		expectedRes parserFn
+	}{
+		"ast mode": {
+			parserMode:  consts.MODE_AST,
+			expectedRes: parseDataByAST,
+		},
+		"custom parser": {
+			parserMode:  consts.MODE_FAST,
+			expectedRes: parseDataByCustomParser,
+		},
+		"not found": {
+			parserMode:  "not found mode",
+			expectedRes: nil,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			sf1 := reflect.ValueOf(tc.expectedRes)
+			sf2 := reflect.ValueOf(getParserMode(tc.parserMode))
+
+			assert.Equal(t, sf1.Pointer(), sf2.Pointer())
+		})
 	}
 }

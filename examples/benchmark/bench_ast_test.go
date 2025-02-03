@@ -36,7 +36,7 @@ func BenchmarkASTCodeGenWithIO(b *testing.B) {
 		file, err := os.Create(astConfig.Destination)
 		assert.Nil(b, err)
 
-		file.WriteString(data)
+		file.WriteString(data.ToSource())
 		assert.Nil(b, file.Close())
 	}
 }

@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path"
-	"sync"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
 	"github.com/Jh123x/buildergen/internal/consts"
@@ -15,80 +13,52 @@ import (
 	"github.com/Jh123x/buildergen/internal/utils"
 )
 
-var (
-	src            = flag.String("src", consts.EMPTY_STR, "the source file path")
-	name           = flag.String("name", consts.EMPTY_STR, "the name of the struct")
-	dest           = flag.String("dst", consts.EMPTY_STR, "the destination file path, default: {src_dir}/{src}_builder.go")
-	pkg            = flag.String("pkg", consts.EMPTY_STR, "the package name of the generated file, default: {src pkg}")
-	withValidation = flag.Bool("validate", false, "validate the syntax of the original file, default: false")
-	astMode        = flag.String("mode", string(consts.MODE_AST), "the parser mode")
-
-	configFile = flag.String("config", consts.EMPTY_STR, "the config file for buildergen")
-)
+func logWrapper(s string, a ...any) (int, error) {
+	log.Printf(s, a...)
+	return 0, nil
+}
 
 func main() {
+	var (
+		src            = flag.String("src", consts.EMPTY_STR, "the source file path")
+		name           = flag.String("name", consts.EMPTY_STR, "the name of the struct")
+		dest           = flag.String("dst", consts.EMPTY_STR, "the destination file path, default: {src_dir}/{src}_builder.go")
+		pkg            = flag.String("pkg", consts.EMPTY_STR, "the package name of the generated file, default: {src pkg}")
+		withValidation = flag.Bool("validate", false, "validate the syntax of the original file, default: false")
+		astMode        = flag.String("mode", string(consts.MODE_AST), "the parser mode")
+
+		configFile = flag.String("config", consts.EMPTY_STR, "the config file for buildergen")
+		configs    []*cmd.Config
+	)
+
 	flag.Parse()
 
 	if !utils.IsNilOrEmpty(configFile) {
-		configs, err := cmd.ParseConfigFile(*configFile)
+		cfgs, err := cmd.ParseConfigFile(*configFile)
 		if err != nil {
 			cmd.GetUsage(fmt.Printf)
 			fmt.Printf("Error parsing config file: %s", err.Error())
 			return
 		}
 
-		var wg sync.WaitGroup
-		wg.Add(len(configs))
-		defer wg.Wait()
-
-		for _, conf := range configs {
-			go func() {
-				defer wg.Done()
-				if path.Dir(conf.Source) != path.Dir(conf.Destination) {
-					fmt.Printf("[%s::%s] dest in different path from destination is currently not supported\n", conf.Source, conf.Name)
-					return
-				}
-
-				if err := generateFile(conf); err != nil {
-					fmt.Printf("[%s::%s] %s\n", conf.Source, conf.Name, err)
-				}
-			}()
-		}
-
-		return
+		configs = append(configs, cfgs...)
 	}
 
 	if !utils.IsNilOrEmpty(src) {
 		config, err := cmd.NewConfig(*src, *dest, *pkg, *name, *withValidation, consts.Mode(*astMode))
 		if err != nil {
-			cmd.GetUsage(fmt.Printf)
-			log.Printf("Error parsing config file: %s", err.Error())
+			cmd.GetUsage(logWrapper)
+			logWrapper("Error parsing config file: %s", err.Error())
 			return
 		}
+		configs = append(configs, config)
+	}
 
-		generateFile(config)
+	if len(configs) == 0 {
+		cmd.GetUsage(fmt.Printf)
+		os.Exit(1)
 		return
 	}
 
-	cmd.GetUsage(fmt.Printf)
-	os.Exit(1)
-}
-
-func generateFile(config *cmd.Config) error {
-	builderSrc, err := parser.ParseBuilderFile(config)
-	if err != nil {
-		return err
-	}
-
-	file, err := os.Create(config.Destination)
-	if err != nil {
-		return err
-	}
-
-	file.WriteString(builderSrc)
-	if err := file.Close(); err != nil {
-		log.Println(err.Error())
-	}
-
-	return nil
+	parser.ParseAndWriteBuilderFile(configs, logWrapper)
 }

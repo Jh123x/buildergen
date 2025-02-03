@@ -82,10 +82,9 @@ func naiveIteration() algo {
 }
 
 func naiveMap() algo {
-	type empty struct{}
-	mp := make(map[string]empty, 25)
+	mp := make(map[string]consts.Empty, 25)
 	for i := 0; i < 25; i++ {
-		mp[consts.Keywords[i]] = empty{}
+		mp[consts.Keywords[i]] = consts.Empty{}
 	}
 
 	return func(s string) bool {

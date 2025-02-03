@@ -23,3 +23,7 @@ func Map[T, R any](lst []T, mapper func(T) R) []R {
 
 	return result
 }
+
+func FilterNil[T any](lst []*T) []*T {
+	return Filter(lst, func(v *T) bool { return v != nil })
+}

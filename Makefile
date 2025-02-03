@@ -4,7 +4,7 @@ install:
 
 .PHONY: test
 test:
-	go test -coverprofile cov.out -v ./internal/cmd/... ./internal/consts/... ./internal/generation/... ./internal/utils/... ./internal/parser
+	go test -coverprofile cov.out -v -cover ./internal/consts/... ./internal/generation/... ./internal/utils/... ./internal/parser ./internal/writer ./internal/cmd/...
 
 .PHONY: coverage
 coverage: test
