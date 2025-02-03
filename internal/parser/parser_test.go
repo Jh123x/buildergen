@@ -3,7 +3,6 @@ package parser
 import (
 	"fmt"
 	"os"
-	"path"
 	"path/filepath"
 	"reflect"
 	"testing"
@@ -49,7 +48,7 @@ func TestParseBuilderFile(t *testing.T) {
 				Package: "benchmark",
 				Name:    "Data",
 			},
-			expectedFileRes: path.Join("..", "..", "examples", "benchmark", "benchmark_builder.go"),
+			expectedFileRes: filepath.Join("..", "..", "examples", "benchmark", "benchmark_builder.go"),
 		},
 		"internal file": {
 			config: &cmd.Config{
