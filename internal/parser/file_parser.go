@@ -2,7 +2,6 @@ package parser
 
 import (
 	"fmt"
-	"log"
 	"path"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
@@ -65,23 +64,23 @@ func ParseAndWriteBuilderFile(configPath string) {
 	}
 }
 
-func ParseCommand(src, dest, pkg, name string, withValidation bool, astMode string) {
+func ParseCommand(src, dest, pkg, name string, withValidation bool, astMode string, logWrapper cmd.PrinterFn) {
 	config, err := cmd.NewConfig(src, dest, pkg, name, withValidation, consts.Mode(astMode))
 	if err != nil {
-		cmd.GetUsage(fmt.Printf)
-		log.Printf("Error parsing config file: %s", err.Error())
+		cmd.GetUsage(logWrapper)
+		logWrapper("Error parsing config file: %s", err.Error())
 		return
 	}
 
 	builderSrc, err := ParseBuilderFile(config)
 	if err != nil {
-		cmd.GetUsage(fmt.Printf)
-		log.Printf("Error parsing config file: %s", err.Error())
+		cmd.GetUsage(logWrapper)
+		logWrapper("Error parsing config file: %s", err.Error())
 		return
 	}
 
 	if err := writer.WriteToSingleFile(config.Destination, builderSrc.ToSource()); err != nil {
-		log.Printf("Error parsing config file: %s", err.Error())
+		logWrapper("Error parsing config file: %s", err.Error())
 		return
 	}
 }

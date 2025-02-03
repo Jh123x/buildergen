@@ -4,6 +4,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
@@ -11,6 +12,11 @@ import (
 	"github.com/Jh123x/buildergen/internal/parser"
 	"github.com/Jh123x/buildergen/internal/utils"
 )
+
+func logWrapper(s string, a ...any) (int, error) {
+	log.Printf(s, a...)
+	return 0, nil
+}
 
 func main() {
 	var (
@@ -32,7 +38,7 @@ func main() {
 	}
 
 	if !utils.IsNilOrEmpty(src) {
-		parser.ParseCommand(*src, *dest, *pkg, *name, *withValidation, *astMode)
+		parser.ParseCommand(*src, *dest, *pkg, *name, *withValidation, *astMode, logWrapper)
 		return
 	}
 
