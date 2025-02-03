@@ -10,4 +10,6 @@ const (
 	BUILD_PACKAGE = "package"
 
 	DEFAULT_TRIM = "\n\r\t "
+
+	DEFAULT_TEMP_DIR = "."
 )

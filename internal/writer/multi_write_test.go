@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/Jh123x/buildergen/internal/generation"
 	"github.com/stretchr/testify/assert"
 )
@@ -68,10 +69,11 @@ func TestMultiFileWrite(t *testing.T) {
 	currDir, err := os.Getwd()
 	assert.Nil(t, err)
 
-	tmpDir := os.TempDir()
-	writeDir := filepath.Join(tmpDir, "test_write_to_multi_file")
+	writeDir, err := os.MkdirTemp(consts.DEFAULT_TEMP_DIR, "test_write_to_multi_file")
+	if !assert.Nil(t, err) {
+		return
+	}
 
-	assert.Nil(t, os.Mkdir(writeDir, 0644))
 	t.Cleanup(func() { assert.Nil(t, os.RemoveAll(writeDir)) })
 
 	for name, tc := range tests {

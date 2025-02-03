@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -23,11 +24,11 @@ func TestWriteToSingleFile(t *testing.T) {
 		},
 	}
 
-	tmpDir := os.TempDir()
-	writeDir := filepath.Join(tmpDir, "test_write_to_single_file")
-	if !assert.Nil(t, os.Mkdir(writeDir, 0644), "Error creating dir") {
+	writeDir, err := os.MkdirTemp(consts.DEFAULT_TEMP_DIR, "test_write_to_single_file")
+	if !assert.Nil(t, err) {
 		return
 	}
+
 	t.Cleanup(func() { assert.Nil(t, os.RemoveAll(writeDir)) })
 
 	for name, tc := range tests {
