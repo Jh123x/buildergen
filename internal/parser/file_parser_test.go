@@ -9,10 +9,11 @@ import (
 
 	"github.com/Jh123x/buildergen/internal/cmd"
 	"github.com/Jh123x/buildergen/internal/consts"
+	"github.com/Jh123x/buildergen/internal/utils"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParseCommand_Fail(t *testing.T) {
+func TestParseCommand(t *testing.T) {
 	usageBuilder := strings.Builder{}
 	cmd.GetUsage(func(s string, a ...any) (int, error) {
 		usageBuilder.WriteString(fmt.Sprintf(s, a...))
@@ -21,117 +22,84 @@ func TestParseCommand_Fail(t *testing.T) {
 	})
 
 	tests := map[string]struct {
-		src            string
-		dest           string
-		pkg            string
-		name           string
-		withValidation bool
-		astMode        consts.Mode
-
-		expectedOutput string
-	}{
-		"empty source": {
-			src:            "",
-			dest:           "test_destination.go",
-			pkg:            "test_pkg",
-			name:           "Test",
-			withValidation: false,
-			astMode:        consts.MODE_AST,
-			expectedOutput: strings.Join(
-				[]string{usageBuilder.String(), "Error parsing config file: " + consts.ErrSrcNotFound.Error(), "\n"},
-				"",
-			),
-		},
-		"invalid syntax": {
-			src:            "../../go.mod",
-			dest:           "test_destination.go",
-			pkg:            "test_pkg",
-			name:           "Test",
-			withValidation: true,
-			astMode:        consts.MODE_AST,
-			expectedOutput: strings.Join(
-				[]string{usageBuilder.String(), "Error parsing config file: " + consts.ErrNotGoFile.Error(), "\n"},
-				"",
-			),
-		},
-	}
-
-	for name, tc := range tests {
-		t.Run(name, func(t *testing.T) {
-			builder := strings.Builder{}
-			tmp := func(s string, a ...any) (int, error) {
-				builder.WriteString(fmt.Sprintf(s, a...))
-				builder.WriteRune('\n')
-				return 0, nil
-			}
-
-			ParseCommand(tc.src, tc.dest, tc.pkg, tc.name, tc.withValidation, string(tc.astMode), tmp)
-			assert.Equal(t, tc.expectedOutput, builder.String())
-		})
-	}
-}
-
-func TestParseCommand_Success(t *testing.T) {
-	tests := map[string]struct {
-		src            string
-		pkg            string
-		name           string
-		withValidation bool
-		astMode        consts.Mode
-
+		configs         []*cmd.Config
 		expectedFileRes string
 	}{
 		"simple struct": {
-			src:             filepath.Join("data", "nest.go"),
-			pkg:             "data",
-			name:            "Test",
-			withValidation:  false,
-			astMode:         consts.MODE_AST,
+			configs: []*cmd.Config{
+				{
+					Source:         filepath.Join("data", "nest.go"),
+					Package:        "data",
+					Name:           "Test",
+					WithValidation: false,
+					ParserMode:     consts.MODE_AST,
+				},
+			},
 			expectedFileRes: filepath.Join("data", "nest_expected_result.go"),
 		},
 		"struct with first letter cap": {
-			src:             filepath.Join("data", "name_collision.go"),
-			pkg:             "data",
-			name:            "NameCollide",
-			withValidation:  false,
-			astMode:         consts.MODE_AST,
+			configs: []*cmd.Config{
+				{
+					Source:         filepath.Join("data", "name_collision.go"),
+					Package:        "data",
+					Name:           "NameCollide",
+					WithValidation: false,
+					ParserMode:     consts.MODE_AST,
+				},
+			},
 			expectedFileRes: filepath.Join("data", "name_expected_result.go"),
 		},
 		"struct keyword": {
-			src:             filepath.Join("data", "keywords.go"),
-			pkg:             "data",
-			name:            "Struct",
-			withValidation:  false,
-			astMode:         consts.MODE_AST,
+			configs: []*cmd.Config{
+				{
+					Source:         filepath.Join("data", "keywords.go"),
+					Package:        "data",
+					Name:           "Struct",
+					WithValidation: false,
+					ParserMode:     consts.MODE_AST,
+				},
+			},
 			expectedFileRes: filepath.Join("data", "keywords_expected.go"),
 		},
 		"benchmark struct": {
-			src:             filepath.Join("..", "..", "examples", "benchmark", "benchmark.go"),
-			pkg:             "benchmark",
-			name:            "Data",
-			withValidation:  false,
-			astMode:         consts.MODE_AST,
+			configs: []*cmd.Config{
+				{
+					Source:         filepath.Join("..", "..", "examples", "benchmark", "benchmark.go"),
+					Package:        "benchmark",
+					Name:           "Data",
+					WithValidation: false,
+					ParserMode:     consts.MODE_AST,
+				},
+			},
 			expectedFileRes: filepath.Join("..", "..", "examples", "benchmark", "benchmark_builder.go"),
 		},
 		"internal file": {
-			src:             filepath.Join("..", "cmd", "ttypes.go"),
-			pkg:             "cmd",
-			name:            "Config",
-			withValidation:  false,
-			astMode:         consts.MODE_AST,
+			configs: []*cmd.Config{
+				{
+					Source:         filepath.Join("..", "cmd", "ttypes.go"),
+					Package:        "cmd",
+					Name:           "Config",
+					WithValidation: false,
+					ParserMode:     consts.MODE_AST,
+				},
+			},
 			expectedFileRes: filepath.Join("..", "cmd", "ttypes_builder.go"),
 		},
 		"internal file test": {
-			src:             filepath.Join("..", "cmd", "ttypes_test.go"),
-			pkg:             "cmd",
-			name:            "testCase",
-			withValidation:  false,
-			astMode:         consts.MODE_AST,
+			configs: []*cmd.Config{
+				{
+					Source:         filepath.Join("..", "cmd", "ttypes_test.go"),
+					Package:        "cmd",
+					Name:           "testCase",
+					WithValidation: false,
+					ParserMode:     consts.MODE_AST,
+				},
+			},
 			expectedFileRes: filepath.Join("..", "cmd", "ttypes_builder_test.go"),
 		},
 	}
 
-	writeDir, err := os.MkdirTemp(consts.DEFAULT_TEMP_DIR, "test_parse_command")
+	writeDir, err := os.MkdirTemp(consts.DEFAULT_TEMP_DIR, "test_parse_and_write_builder_file")
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -140,8 +108,27 @@ func TestParseCommand_Success(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
+			builder := strings.Builder{}
+			defer builder.Reset()
+			tmp := func(s string, a ...any) (int, error) {
+				builder.WriteString(fmt.Sprintf(s, a...))
+				builder.WriteRune('\n')
+				return 0, nil
+			}
+
 			dest := filepath.Join(writeDir, fmt.Sprintf("%s.go", name))
-			ParseCommand(tc.src, dest, tc.pkg, tc.name, tc.withValidation, string(tc.astMode), fmt.Printf)
+			tc.configs = utils.Map(
+				tc.configs,
+				func(c *cmd.Config) *cmd.Config {
+					c.Destination = dest
+					return c
+				},
+			)
+
+			ParseAndWriteBuilderFile(tc.configs, tmp)
+			if len(tc.expectedFileRes) == 0 {
+				return
+			}
 
 			destRes, err := os.ReadFile(tc.expectedFileRes)
 			assert.Nil(t, err)

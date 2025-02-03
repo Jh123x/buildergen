@@ -5,20 +5,12 @@ import (
 	"path"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
-	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/Jh123x/buildergen/internal/generation"
 	"github.com/Jh123x/buildergen/internal/utils"
 	"github.com/Jh123x/buildergen/internal/writer"
 )
 
-func ParseAndWriteBuilderFile(configPath string) {
-	configs, err := cmd.ParseConfigFile(configPath)
-	if err != nil {
-		cmd.GetUsage(fmt.Printf)
-		fmt.Printf("Error parsing config file: %s", err.Error())
-		return
-	}
-
+func ParseAndWriteBuilderFile(configs []*cmd.Config, logWrapper cmd.PrinterFn) {
 	cfgChannel := make(chan cmd.ConfigChan, len(configs))
 	for _, conf := range configs {
 		go func() {
@@ -42,7 +34,7 @@ func ParseAndWriteBuilderFile(configPath string) {
 	for i := 0; i < len(configs); i++ {
 		res := <-cfgChannel
 		if res.Err != nil {
-			fmt.Printf("%s\n", res.Err.Error())
+			logWrapper("%s\n", res.Err.Error())
 			continue
 		}
 		mapperData[res.Destination] = append(mapperData[res.Destination], res)
@@ -58,29 +50,8 @@ func ParseAndWriteBuilderFile(configPath string) {
 				},
 			)...,
 		); err != nil {
-			fmt.Printf("%s\n", err.Error())
+			logWrapper("%s\n", err.Error())
 			return
 		}
-	}
-}
-
-func ParseCommand(src, dest, pkg, name string, withValidation bool, astMode string, logWrapper cmd.PrinterFn) {
-	config, err := cmd.NewConfig(src, dest, pkg, name, withValidation, consts.Mode(astMode))
-	if err != nil {
-		cmd.GetUsage(logWrapper)
-		logWrapper("Error parsing config file: %s", err.Error())
-		return
-	}
-
-	builderSrc, err := ParseBuilderFile(config)
-	if err != nil {
-		cmd.GetUsage(logWrapper)
-		logWrapper("Error parsing config file: %s", err.Error())
-		return
-	}
-
-	if err := writer.WriteToSingleFile(config.Destination, builderSrc.ToSource()); err != nil {
-		logWrapper("Error parsing config file: %s", err.Error())
-		return
 	}
 }

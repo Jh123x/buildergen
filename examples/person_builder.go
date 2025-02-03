@@ -7,39 +7,6 @@ import (
 	"os"
 )
 
-type UnRelatedBuilder struct {
-	importOpts *imports.Options
-	otherOpts  *os.FileMode
-}
-
-func NewUnRelatedBuilder(b *UnRelated) *UnRelatedBuilder {
-	if b == nil {
-		return nil
-	}
-
-	return &UnRelatedBuilder{
-		importOpts: b.importOpts,
-		otherOpts:  b.otherOpts,
-	}
-}
-
-func (b *UnRelatedBuilder) WithimportOpts(importOpts *imports.Options) *UnRelatedBuilder {
-	b.importOpts = importOpts
-	return b
-}
-
-func (b *UnRelatedBuilder) WithotherOpts(otherOpts *os.FileMode) *UnRelatedBuilder {
-	b.otherOpts = otherOpts
-	return b
-}
-
-func (b *UnRelatedBuilder) Build() *UnRelated {
-	return &UnRelated{
-		importOpts: b.importOpts,
-		otherOpts:  b.otherOpts,
-	}
-}
-
 type PersonBuilder struct {
 	ID        int
 	Name      string
@@ -102,5 +69,38 @@ func (b *PersonBuilder) Build() *Person {
 		PhoneBook: b.PhoneBook,
 		MapVal:    b.MapVal,
 		T:         b.T,
+	}
+}
+
+type UnRelatedBuilder struct {
+	importOpts *imports.Options
+	otherOpts  *os.FileMode
+}
+
+func NewUnRelatedBuilder(b *UnRelated) *UnRelatedBuilder {
+	if b == nil {
+		return nil
+	}
+
+	return &UnRelatedBuilder{
+		importOpts: b.importOpts,
+		otherOpts:  b.otherOpts,
+	}
+}
+
+func (b *UnRelatedBuilder) WithimportOpts(importOpts *imports.Options) *UnRelatedBuilder {
+	b.importOpts = importOpts
+	return b
+}
+
+func (b *UnRelatedBuilder) WithotherOpts(otherOpts *os.FileMode) *UnRelatedBuilder {
+	b.otherOpts = otherOpts
+	return b
+}
+
+func (b *UnRelatedBuilder) Build() *UnRelated {
+	return &UnRelated{
+		importOpts: b.importOpts,
+		otherOpts:  b.otherOpts,
 	}
 }

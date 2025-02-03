@@ -28,20 +28,37 @@ func main() {
 		astMode        = flag.String("mode", string(consts.MODE_AST), "the parser mode")
 
 		configFile = flag.String("config", consts.EMPTY_STR, "the config file for buildergen")
+		configs    []*cmd.Config
 	)
 
 	flag.Parse()
 
 	if !utils.IsNilOrEmpty(configFile) {
-		parser.ParseAndWriteBuilderFile(*configFile)
-		return
+		cfgs, err := cmd.ParseConfigFile(*configFile)
+		if err != nil {
+			cmd.GetUsage(fmt.Printf)
+			fmt.Printf("Error parsing config file: %s", err.Error())
+			return
+		}
+
+		configs = append(configs, cfgs...)
 	}
 
 	if !utils.IsNilOrEmpty(src) {
-		parser.ParseCommand(*src, *dest, *pkg, *name, *withValidation, *astMode, logWrapper)
+		config, err := cmd.NewConfig(*src, *dest, *pkg, *name, *withValidation, consts.Mode(*astMode))
+		if err != nil {
+			cmd.GetUsage(logWrapper)
+			logWrapper("Error parsing config file: %s", err.Error())
+			return
+		}
+		configs = append(configs, config)
+	}
+
+	if len(configs) == 0 {
+		cmd.GetUsage(fmt.Printf)
+		os.Exit(1)
 		return
 	}
 
-	cmd.GetUsage(fmt.Printf)
-	os.Exit(1)
+	parser.ParseAndWriteBuilderFile(configs, logWrapper)
 }
