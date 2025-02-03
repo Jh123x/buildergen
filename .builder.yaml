@@ -11,3 +11,6 @@ configs:
 - source: ./examples/person.go
   name: Person
   mode: FAST # This mode is faster but may have errors
+- source: ./examples/person.go
+  name: UnRelated
+  mode: FAST # This mode is faster but may have errors
