@@ -27,9 +27,10 @@ The old code only contains CodeGen + I/O mode as I/O is tightly coupled to the i
 | v0.0.2 (alt) | 823289 ns/op             | -                       | Use templates instead of string builder |
 | v0.0.3       | 483838 ns/op             | 267546 ns/op            | Optimize keyword check                  |
 | v0.0.3 (alt) | 603091 ns/op             | 267859 ns/op            | Optimize keyword differently            |
-| v0.0.4       | 293983 ns/op             | 51133 ns/op             | Manual format/import pkgs               |
+| v0.0.4       | 293983 ns/op             | 51133 ns/op             | Manual format/import packages           |
 | v0.0.5       | 418557 ns/op             | 202906 ns/op            | Fix import part using parser            |
 | v0.0.6       | 283447 ns/op             | 45850 ns/op             | Update import part using parser         |
 | v0.0.7       | 195134 ns/op             | 48860 ns/op             | Optimize string opts                    |
 | v0.1.0       | 273165 ns/op             | 28255 ns/op             | Custom Parser                           |
 | v0.2.0       | 282231 ns/op             | 30701 ns/op             | Parsing by file + fix errors            |
+| v0.3.0       | 361820 ns/op             | 64590 ns/op             | Multi struct write to same file         |

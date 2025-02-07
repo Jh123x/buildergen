@@ -28,7 +28,7 @@ func BenchmarkCodeGen(b *testing.B) {
 		data, err := parser.ParseBuilderFile(fastConfig)
 		assert.Nil(b, err)
 
-		assert.Equal(b, string(expectedRes), data)
+		assert.Equal(b, string(expectedRes), data.ToSource())
 	}
 }
 

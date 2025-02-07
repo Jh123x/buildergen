@@ -24,7 +24,7 @@ func BenchmarkASTCodeGen(b *testing.B) {
 		data, err := parser.ParseBuilderFile(astConfig)
 		assert.Nil(b, err)
 
-		assert.Equal(b, string(expectedRes), data)
+		assert.Equal(b, string(expectedRes), data.ToSource())
 	}
 }
 
