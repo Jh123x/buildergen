@@ -10,6 +10,7 @@ import (
 	"github.com/Jh123x/buildergen/internal/cmd"
 	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/Jh123x/buildergen/internal/generation"
+	"github.com/Jh123x/buildergen/internal/utils"
 )
 
 type parserFn func(config *cmd.Config, scanner *bufio.Reader, helper *generation.StructGenHelper) error
@@ -24,6 +25,11 @@ func ParseBuilderFile(config *cmd.Config) (*generation.StructGenHelper, error) {
 	}
 
 	file, err := os.Open(config.Source)
+	if errors.Is(err, os.ErrNotExist) {
+		config.Source = utils.GetFilenameFromGoPath(config.Source)
+		file, err = os.Open(config.Source)
+	}
+
 	if err != nil {
 		return nil, err
 	}
