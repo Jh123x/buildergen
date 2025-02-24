@@ -14,6 +14,8 @@ configs:
 - source: ./examples/person.go
   name: UnRelated
   mode: FAST # This mode is faster but may have errors
+
+# This mode will create the builder, but you may have to change the types.
 - source: gopkg.in/yaml.v3@v3.0.1/decode.go
   destination: ./decode_builder_test.go
   name: parser
