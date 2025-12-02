@@ -31,7 +31,7 @@ func ParseAndWriteBuilderFile(configs []*cmd.Config, logWrapper cmd.PrinterFn) {
 	// Collect the result and write to file
 	mapperData := make(map[string][]cmd.ConfigChan, len(configs))
 
-	for i := 0; i < len(configs); i++ {
+	for _ = range configs {
 		res := <-cfgChannel
 		if res.Err != nil {
 			logWrapper("%s\n", res.Err.Error())
