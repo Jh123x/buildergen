@@ -28,10 +28,7 @@ func ParseBuilderFile(config *cmd.Config, isDstPkgSameAsSrc bool) (*generation.S
 		return nil, err
 	}
 
-	structHelper := &generation.StructGenHelper{
-		SrcPackage: config.Package,
-		Name:       config.Name,
-	}
+	structHelper := &generation.StructGenHelper{Name: config.Name}
 	scanner := bufio.NewReader(file)
 
 	parserFn := getParserMode(config.ParserMode)
@@ -51,21 +48,13 @@ func ParseBuilderFile(config *cmd.Config, isDstPkgSameAsSrc bool) (*generation.S
 		return nil, consts.ErrPackageNotFound
 	}
 
-	if isDstPkgSameAsSrc {
-		structHelper.DstPackage = structHelper.SrcPackage
-	} else {
-		structHelper.DstPackage = config.Package
-	}
-
 	return structHelper, nil
 }
 
 func getParserMode(parserMode consts.Mode) parserFn {
 	switch parserMode {
-	case consts.MODE_AST:
+	case consts.MODE_AST, consts.MODE_FAST:
 		return parseDataByAST
-	case consts.MODE_FAST:
-		return parseDataByCustomParser
 	default:
 		return nil
 	}

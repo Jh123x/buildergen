@@ -108,10 +108,6 @@ func Test_getParserMode(t *testing.T) {
 			parserMode:  consts.MODE_AST,
 			expectedRes: parseDataByAST,
 		},
-		"custom parser": {
-			parserMode:  consts.MODE_FAST,
-			expectedRes: parseDataByCustomParser,
-		},
 		"not found": {
 			parserMode:  "not found mode",
 			expectedRes: nil,
