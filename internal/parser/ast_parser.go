@@ -20,8 +20,8 @@ func parseDataByAST(config *cmd.Config, scanner *bufio.Reader, helper *generatio
 		return err
 	}
 
-	if len(helper.Package) == 0 && astFile.Package.IsValid() {
-		helper.Package = astFile.Name.Name
+	if len(helper.DestPackage) == 0 && astFile.Package.IsValid() {
+		helper.DestPackage = astFile.Name.Name
 	}
 
 	res, ok := findRequestedStructType(astFile, config.Name)

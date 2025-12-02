@@ -70,16 +70,16 @@ func mergePackages(structs []*generation.StructGenHelper) (string, error) {
 	}
 
 	if len(structs) == 1 {
-		return structs[0].Package, nil
+		return structs[0].DestPackage, nil
 	}
 
 	pkgSet := make(utils.Set[string], len(structs))
 	for _, s := range structs {
-		if s == nil || s.Package == "" {
+		if s == nil || s.DestPackage == "" {
 			continue
 		}
 
-		pkgSet.Add(s.Package)
+		pkgSet.Add(s.DestPackage)
 	}
 
 	switch len(pkgSet) {
@@ -94,7 +94,7 @@ func mergePackages(structs []*generation.StructGenHelper) (string, error) {
 			strings.Join(structNames, ", "),
 		)
 	case 1:
-		return structs[0].Package, nil
+		return structs[0].DestPackage, nil
 	default:
 		break
 	}

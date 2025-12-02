@@ -46,10 +46,10 @@ func (f *Field) GetUsedPackageName() string {
 }
 
 type StructGenHelper struct {
-	Name    string
-	Package string
-	Fields  []*Field
-	Imports []*Import
+	Name        string
+	DestPackage string
+	Fields      []*Field
+	Imports     []*Import
 
 	// Used Internally
 	maxFieldLen  int
@@ -94,7 +94,7 @@ func (s *StructGenHelper) ToSource() string {
 	srcBuilder.WriteString("\n")
 	srcBuilder.WriteString(consts.BUILD_PACKAGE)
 	srcBuilder.WriteString(" ")
-	srcBuilder.WriteString(s.Package)
+	srcBuilder.WriteString(s.DestPackage)
 
 	if len(s.usedPackages) > 0 {
 		importBuffer := make([]string, 0, len(s.Imports))

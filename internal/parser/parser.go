@@ -29,8 +29,8 @@ func ParseBuilderFile(config *cmd.Config) (*generation.StructGenHelper, error) {
 	}
 
 	structHelper := &generation.StructGenHelper{
-		Package: config.Package,
-		Name:    config.Name,
+		DestPackage: config.Package,
+		Name:        config.Name,
 	}
 	scanner := bufio.NewReader(file)
 
@@ -47,7 +47,7 @@ func ParseBuilderFile(config *cmd.Config) (*generation.StructGenHelper, error) {
 		return nil, consts.ErrNoStructsFound
 	}
 
-	if len(structHelper.Package) == 0 {
+	if len(structHelper.DestPackage) == 0 {
 		return nil, consts.ErrPackageNotFound
 	}
 
