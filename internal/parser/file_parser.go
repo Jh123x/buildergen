@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"path"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
@@ -14,15 +13,11 @@ func ParseAndWriteBuilderFile(configs []*cmd.Config, logWrapper cmd.PrinterFn) {
 	cfgChannel := make(chan cmd.ConfigChan, len(configs))
 	for _, conf := range configs {
 		go func() {
-			if path.Dir(conf.Source) != path.Dir(conf.Destination) {
-				cfgChannel <- cmd.ConfigChan{Err: fmt.Errorf("[%s::%s] dest in different path from destination is currently not supported", conf.Source, conf.Name)}
-				return
-			}
-
 			res, err := ParseBuilderFile(conf)
 			cfgChannel <- cmd.ConfigChan{
 				StructHelper: res,
 				Destination:  conf.Destination,
+				IsDestDiff:   path.Dir(conf.Source) != path.Dir(conf.Destination),
 				Err:          err,
 			}
 		}()
