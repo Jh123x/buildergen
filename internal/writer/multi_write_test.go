@@ -23,7 +23,7 @@ func TestMultiFileWrite(t *testing.T) {
 				nil,
 				{
 					Name:        "Test",
-					DestPackage: "data",
+					SrcPackage: "data",
 					Fields: []*generation.Field{
 						{Name: "Val", Type: "string"},
 						{Name: "ImportedType", Type: "*os.FileMode"},
@@ -41,7 +41,7 @@ func TestMultiFileWrite(t *testing.T) {
 				nil,
 				{
 					Name:        "Test",
-					DestPackage: "data",
+					SrcPackage: "data",
 					Fields: []*generation.Field{
 						{Name: "Val", Type: "string"},
 						{Name: "ImportedType", Type: "*os.FileMode"},
@@ -52,7 +52,7 @@ func TestMultiFileWrite(t *testing.T) {
 				},
 				{
 					Name:        "OtherStruct",
-					DestPackage: "data",
+					SrcPackage: "data",
 					Fields: []*generation.Field{
 						{Name: "OtherImports", Type: "context.Context"},
 					},

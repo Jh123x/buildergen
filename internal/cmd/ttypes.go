@@ -26,7 +26,6 @@ type Config struct {
 type ConfigChan struct {
 	StructHelper *generation.StructGenHelper
 	Destination  string
-	IsDestDiff   bool
 	Err          error
 }
 

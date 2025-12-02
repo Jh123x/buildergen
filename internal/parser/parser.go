@@ -15,7 +15,7 @@ import (
 type parserFn func(config *cmd.Config, scanner *bufio.Reader, helper *generation.StructGenHelper) error
 
 // ParseBuilderFile creates a file based on config and returns the first encountered error.
-func ParseBuilderFile(config *cmd.Config) (*generation.StructGenHelper, error) {
+func ParseBuilderFile(config *cmd.Config, isDstPkgSameAsSrc bool) (*generation.StructGenHelper, error) {
 	if config.WithValidation {
 		fset := token.NewFileSet()
 		if _, err := parser.ParseFile(fset, config.Source, nil, 0); err != nil {
@@ -29,8 +29,8 @@ func ParseBuilderFile(config *cmd.Config) (*generation.StructGenHelper, error) {
 	}
 
 	structHelper := &generation.StructGenHelper{
-		DestPackage: config.Package,
-		Name:        config.Name,
+		SrcPackage: config.Package,
+		Name:       config.Name,
 	}
 	scanner := bufio.NewReader(file)
 
@@ -47,8 +47,14 @@ func ParseBuilderFile(config *cmd.Config) (*generation.StructGenHelper, error) {
 		return nil, consts.ErrNoStructsFound
 	}
 
-	if len(structHelper.DestPackage) == 0 {
+	if len(structHelper.SrcPackage) == 0 {
 		return nil, consts.ErrPackageNotFound
+	}
+
+	if isDstPkgSameAsSrc {
+		structHelper.DstPackage = structHelper.SrcPackage
+	} else {
+		structHelper.DstPackage = config.Package
 	}
 
 	return structHelper, nil

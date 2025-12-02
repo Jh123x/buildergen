@@ -226,9 +226,9 @@ func parsePkg(scanner *bufio.Reader, helper *generation.StructGenHelper) error {
 		return err
 	}
 
-	if helper.DestPackage == "" {
+	if helper.SrcPackage == "" {
 		pkg := strings.Trim(pkgName, consts.DEFAULT_TRIM)
-		helper.DestPackage = pkg
+		helper.SrcPackage = pkg
 	}
 
 	return nil

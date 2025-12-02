@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"path"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
@@ -13,11 +14,19 @@ func ParseAndWriteBuilderFile(configs []*cmd.Config, logWrapper cmd.PrinterFn) {
 	cfgChannel := make(chan cmd.ConfigChan, len(configs))
 	for _, conf := range configs {
 		go func() {
-			res, err := ParseBuilderFile(conf)
+			IsDstSameAsSrc := path.Dir(conf.Source) != path.Dir(conf.Destination)
+			if !IsDstSameAsSrc && conf.Package == "" {
+				logWrapper("Package name is required when destination is different from source")
+				cfgChannel <- cmd.ConfigChan{
+					Err: fmt.Errorf("package name is required when destination is different from source"),
+				}
+				return
+			}
+
+			res, err := ParseBuilderFile(conf, IsDstSameAsSrc)
 			cfgChannel <- cmd.ConfigChan{
 				StructHelper: res,
 				Destination:  conf.Destination,
-				IsDestDiff:   path.Dir(conf.Source) != path.Dir(conf.Destination),
 				Err:          err,
 			}
 		}()

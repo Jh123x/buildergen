@@ -20,8 +20,8 @@ func parseDataByAST(config *cmd.Config, scanner *bufio.Reader, helper *generatio
 		return err
 	}
 
-	if len(helper.DestPackage) == 0 && astFile.Package.IsValid() {
-		helper.DestPackage = astFile.Name.Name
+	if len(helper.SrcPackage) == 0 && astFile.Package.IsValid() {
+		helper.SrcPackage = astFile.Name.Name
 	}
 
 	res, ok := findRequestedStructType(astFile, config.Name)
@@ -29,8 +29,15 @@ func parseDataByAST(config *cmd.Config, scanner *bufio.Reader, helper *generatio
 		return consts.ErrNoStructsFound
 	}
 
-	helper.Imports = parseData(astFile.Imports)
+	importFiles := parseData(astFile.Imports)
+	if helper.SrcPackage != helper.DstPackage {
+		helper.Imports = append(helper.Imports, &generation.Import{
+			Name: helper.SrcPackage,
+			Path: config.Source,
+		})
+	}
 
+	helper.Imports = importFiles
 	if err := generation.GenerateBuilder(res, helper); err != nil {
 		return err
 	}

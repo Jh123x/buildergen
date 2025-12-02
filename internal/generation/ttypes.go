@@ -46,10 +46,11 @@ func (f *Field) GetUsedPackageName() string {
 }
 
 type StructGenHelper struct {
-	Name        string
-	DestPackage string
-	Fields      []*Field
-	Imports     []*Import
+	Name       string
+	SrcPackage string
+	Fields     []*Field
+	Imports    []*Import
+	DstPackage string
 
 	// Used Internally
 	maxFieldLen  int
@@ -94,9 +95,9 @@ func (s *StructGenHelper) ToSource() string {
 	srcBuilder.WriteString("\n")
 	srcBuilder.WriteString(consts.BUILD_PACKAGE)
 	srcBuilder.WriteString(" ")
-	srcBuilder.WriteString(s.DestPackage)
+	srcBuilder.WriteString(s.SrcPackage)
 
-	if len(s.usedPackages) > 0 {
+	if len(s.usedPackages) > 0 || s.SrcPackage != s.DstPackage {
 		importBuffer := make([]string, 0, len(s.Imports))
 		for _, importVal := range s.Imports {
 			importName := importVal.GetName()
@@ -163,6 +164,10 @@ func (s *StructGenHelper) genNewMethod(builder *strings.Builder) {
 	builder.WriteString("func New")
 	builder.WriteString(s.Name)
 	builder.WriteString("Builder(b *")
+	if s.DstPackage != s.SrcPackage {
+		builder.WriteString(s.DstPackage)
+		builder.WriteString(".")
+	}
 	builder.WriteString(s.Name)
 	builder.WriteString(") *")
 	builder.WriteString(s.Name)
@@ -210,6 +215,10 @@ func (s *StructGenHelper) genBuildMethod(builder *strings.Builder) string {
 	builder.WriteString("func (b *")
 	builder.WriteString(s.Name)
 	builder.WriteString("Builder) Build() *")
+	if s.DstPackage != s.SrcPackage {
+		builder.WriteString(s.DstPackage)
+		builder.WriteString(".")
+	}
 	builder.WriteString(s.Name)
 	builder.WriteString(" {\n\treturn &")
 	builder.WriteString(s.Name)
