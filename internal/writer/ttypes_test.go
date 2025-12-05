@@ -23,8 +23,8 @@ func Test_writeHelper(t *testing.T) {
 				},
 				structs: []*generation.StructGenHelper{
 					{
-						Name:        "test",
-						SrcPackage: "should be ignored",
+						Name:       "test",
+						SrcPackage: "data",
 						Fields: []*generation.Field{
 							{Name: "test", Type: "generation.Field", Tags: ""},
 							{Name: "test2", Type: "strings.Builder", Tags: ""},
