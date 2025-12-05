@@ -30,7 +30,7 @@ func BenchmarkASTCodeGen(b *testing.B) {
 
 func BenchmarkASTCodeGenWithIO(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		data, err := parser.ParseBuilderFile(astConfig)
+		data, err := parser.ParseBuilderFile(astConfig, true)
 		assert.Nil(b, err)
 
 		file, err := os.Create(astConfig.Destination)
