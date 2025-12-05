@@ -34,7 +34,7 @@ func BenchmarkCodeGen(b *testing.B) {
 
 func BenchmarkCodeGenWithIO(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		data, err := parser.ParseBuilderFile(fastConfig)
+		data, err := parser.ParseBuilderFile(fastConfig, false)
 		assert.Nil(b, err)
 
 		file, err := os.Create(fastConfig.Destination)
