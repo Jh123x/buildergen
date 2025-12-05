@@ -83,7 +83,7 @@ func TestParseBuilderFile(t *testing.T) {
 		for _, mode := range consts.ALL_MODES {
 			t.Run(fmt.Sprintf("%s_%s", name, mode), func(t *testing.T) {
 				tc.config.ParserMode = mode
-				res, err := ParseBuilderFile(tc.config)
+				res, err := ParseBuilderFile(tc.config, true)
 				expectedRes := consts.EMPTY_STR
 
 				if len(tc.expectedFileRes) > 0 {
