@@ -9,3 +9,7 @@ test:
 .PHONY: coverage
 coverage: test
 	go tool cover -func=cov.out
+
+.PHONY: benchmark
+benchmark:
+	go test -bench=. -benchmem ./examples/...
