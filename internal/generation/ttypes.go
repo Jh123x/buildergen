@@ -55,11 +55,12 @@ func (f *Field) BuildType() string {
 }
 
 type StructGenHelper struct {
-	Name       string
-	SrcPackage string
-	Fields     []*Field
-	Imports    []*Import
-	DstPackage string
+	Name          string
+	SrcPackage    string
+	Fields        []*Field
+	Imports       []*Import
+	DstPackage    string
+	GenerationCmd string
 
 	// Used Internally
 	maxFieldLen  int
@@ -102,6 +103,9 @@ func (s *StructGenHelper) ToSource() string {
 	s.preprocess()
 	srcBuilder := strings.Builder{}
 	srcBuilder.WriteString(consts.BUILD_HEADER)
+	srcBuilder.WriteString("\n")
+	srcBuilder.WriteString("// Generated using:")
+	srcBuilder.WriteString(s.GenerationCmd)
 	srcBuilder.WriteString("\n")
 	srcBuilder.WriteString(consts.BUILD_PACKAGE)
 	srcBuilder.WriteString(" ")

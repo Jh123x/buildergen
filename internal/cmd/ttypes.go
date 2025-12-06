@@ -72,3 +72,40 @@ func (c *Config) FillDefaults() (*Config, error) {
 
 	return c, nil
 }
+
+func (c *Config) ToCommand() (string, error) {
+	if c == nil {
+		return "", fmt.Errorf("invalid config")
+	}
+
+	if c.Source == "" {
+		return "", fmt.Errorf("source file not found")
+	}
+
+	if c.Name == "" {
+		return "", fmt.Errorf("struct name not found")
+	}
+
+	cmd := strings.Builder{}
+	cmd.WriteString("buildergen")
+	cmd.WriteString(" --src=")
+	cmd.WriteString(c.Source)
+	cmd.WriteString(" --name=")
+	cmd.WriteString(c.Name)
+
+	if c.Destination != "" {
+		cmd.WriteString(" --dst=")
+		cmd.WriteString(c.Destination)
+	}
+
+	if c.Package != "" {
+		cmd.WriteString(" --pkg=")
+		cmd.WriteString(c.Package)
+	}
+
+	if c.WithValidation {
+		cmd.WriteString(" --validation")
+	}
+
+	return cmd.String(), nil
+}
