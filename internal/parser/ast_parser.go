@@ -26,6 +26,7 @@ func parseDataByAST(config *cmd.Config, scanner *bufio.Reader, helper *generatio
 	}
 
 	helper.SrcPackage = astFile.Name.Name
+	helper.DstPackage = helper.SrcPackage
 	if config.Package != "" {
 		helper.DstPackage = config.Package
 	}
@@ -36,7 +37,7 @@ func parseDataByAST(config *cmd.Config, scanner *bufio.Reader, helper *generatio
 	}
 
 	importFiles := parseData(astFile.Imports)
-	if helper.SrcPackage != config.Package {
+	if helper.SrcPackage != helper.DstPackage {
 		res, err := importPathFromFile(config.Source)
 		if err != nil {
 			return err

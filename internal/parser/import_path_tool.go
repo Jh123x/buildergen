@@ -9,6 +9,8 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+
+	"golang.org/x/tools/go/packages"
 )
 
 func importPathFromFile(filePath string) (string, error) {
@@ -22,6 +24,10 @@ func importPathFromFile(filePath string) (string, error) {
 	}
 
 	if ip, err := importPathFromGopath(absPath); err == nil {
+		return ip, nil
+	}
+
+	if ip, err := importPathForFile(absPath); err == nil {
 		return ip, nil
 	}
 
@@ -94,4 +100,21 @@ func importPathFromGopath(file string) (string, error) {
 		}
 	}
 	return "", fmt.Errorf("file is not in a module or GOPATH")
+}
+
+func importPathForFile(absPath string) (string, error) {
+	cfg := &packages.Config{
+		Mode: packages.NeedFiles | packages.NeedName | packages.NeedModule,
+	}
+
+	// Load the package that owns this file.
+	pkgs, err := packages.Load(cfg, "file="+absPath)
+	if err != nil {
+		return "", err
+	}
+	if len(pkgs) == 0 {
+		return "", fmt.Errorf("no package found")
+	}
+
+	return pkgs[0].PkgPath, nil
 }

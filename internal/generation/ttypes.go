@@ -104,9 +104,6 @@ func (s *StructGenHelper) ToSource() string {
 	srcBuilder := strings.Builder{}
 	srcBuilder.WriteString(consts.BUILD_HEADER)
 	srcBuilder.WriteString("\n")
-	srcBuilder.WriteString("// Generated using: ")
-	srcBuilder.WriteString(s.GenerationCmd)
-	srcBuilder.WriteString("\n")
 	srcBuilder.WriteString(consts.BUILD_PACKAGE)
 	srcBuilder.WriteString(" ")
 	srcBuilder.WriteString(s.DstPackage)
@@ -147,6 +144,9 @@ func (s *StructGenHelper) ToSource() string {
 func (s *StructGenHelper) BuildStruct() string {
 	s.preprocess()
 	srcBuilder := strings.Builder{}
+	srcBuilder.WriteString("// Generated using: ")
+	srcBuilder.WriteString(s.GenerationCmd)
+	srcBuilder.WriteString("\n")
 	srcBuilder.WriteString("type ")
 	srcBuilder.WriteString(s.Name)
 	srcBuilder.WriteString("Builder struct {\n")
