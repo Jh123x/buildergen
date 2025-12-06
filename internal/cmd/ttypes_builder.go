@@ -3,6 +3,7 @@ package cmd
 
 import "github.com/Jh123x/buildergen/internal/consts"
 
+// Generated using: buildergen --src=./internal/cmd/ttypes.go --name=Config --dst=./internal/cmd/ttypes_builder.go
 type ConfigBuilder struct {
 	Source         string      `yaml:"source"`
 	Destination    string      `yaml:"destination"`
@@ -10,6 +11,7 @@ type ConfigBuilder struct {
 	Name           string      `yaml:"name"`
 	WithValidation bool        `yaml:"with-validation"`
 	ParserMode     consts.Mode `yaml:"mode"`
+	generationCmd  string
 }
 
 func NewConfigBuilder(b *Config) *ConfigBuilder {
@@ -24,6 +26,7 @@ func NewConfigBuilder(b *Config) *ConfigBuilder {
 		Name:           b.Name,
 		WithValidation: b.WithValidation,
 		ParserMode:     b.ParserMode,
+		generationCmd:  b.generationCmd,
 	}
 }
 
@@ -57,6 +60,11 @@ func (b *ConfigBuilder) WithParserMode(parserMode consts.Mode) *ConfigBuilder {
 	return b
 }
 
+func (b *ConfigBuilder) WithgenerationCmd(generationCmd string) *ConfigBuilder {
+	b.generationCmd = generationCmd
+	return b
+}
+
 func (b *ConfigBuilder) Build() *Config {
 	return &Config{
 		Source:         b.Source,
@@ -65,5 +73,6 @@ func (b *ConfigBuilder) Build() *Config {
 		Name:           b.Name,
 		WithValidation: b.WithValidation,
 		ParserMode:     b.ParserMode,
+		generationCmd:  b.generationCmd,
 	}
 }
