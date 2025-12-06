@@ -6,12 +6,10 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"path/filepath"
 
 	"github.com/Jh123x/buildergen/internal/cmd"
 	"github.com/Jh123x/buildergen/internal/consts"
 	"github.com/Jh123x/buildergen/internal/generation"
-	"golang.org/x/tools/go/packages"
 )
 
 var _ parserFn = parseDataByAST
@@ -56,29 +54,6 @@ func parseDataByAST(config *cmd.Config, scanner *bufio.Reader, helper *generatio
 	}
 
 	return nil
-}
-
-func importPathFromFile(filePath string) (string, error) {
-	abs, err := filepath.Abs(filePath)
-	if err != nil {
-		return "", err
-	}
-
-	cfg := &packages.Config{
-		Mode: packages.NeedFiles | packages.NeedName | packages.NeedModule,
-	}
-
-	// Load the package that owns this file.
-	pkgs, err := packages.Load(cfg, "file="+abs)
-	if err != nil {
-		return "", err
-	}
-
-	if len(pkgs) == 0 {
-		return "", fmt.Errorf("no package found for %s", filePath)
-	}
-
-	return pkgs[0].PkgPath, nil
 }
 
 func parseData(imports []*ast.ImportSpec) []*generation.Import {
