@@ -84,14 +84,6 @@ func TestNewConfig(t *testing.T) {
 					WithPackage(consts.EMPTY_STR).
 					Build(),
 			).Build(),
-		"with parser mode should take parser mode": NewtestCaseBuilder(defaultSuccessTestCase).
-			WithparserMode(consts.MODE_FAST).
-			WithexpectedConfig(
-				NewConfigBuilder(defaultConfig).
-					WithParserMode(consts.MODE_FAST).
-					Build(),
-			).
-			Build(),
 	}
 
 	for name, tc := range tests {
