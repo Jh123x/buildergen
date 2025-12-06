@@ -12,7 +12,7 @@ type PrinterFn func(string, ...any) (int, error)
 
 var _ PrinterFn = fmt.Printf
 
-//go:generate buildergen -src=./ttypes.go -name Config
+//go:generate buildergen -src=./ttypes.go -name=Config
 
 type Config struct {
 	Source         string      `yaml:"source"`
@@ -21,6 +21,7 @@ type Config struct {
 	Name           string      `yaml:"name"`
 	WithValidation bool        `yaml:"with-validation"`
 	ParserMode     consts.Mode `yaml:"mode"`
+	generationCmd  string
 }
 
 type ConfigChan struct {
@@ -41,7 +42,18 @@ func NewConfig(src, dst, pkg, name string, validation bool, parserMode consts.Mo
 		ParserMode:     parserMode,
 	}
 
-	return config.FillDefaults()
+	generationCmd, err := config.ToCommand()
+	if err != nil {
+		return nil, err
+	}
+
+	config, err = config.FillDefaults()
+	if err != nil {
+		return nil, err
+	}
+
+	config.generationCmd = generationCmd
+	return config, nil
 }
 
 func (c *Config) FillDefaults() (*Config, error) {

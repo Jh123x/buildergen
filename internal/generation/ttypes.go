@@ -119,10 +119,8 @@ func (s *StructGenHelper) ToSource() string {
 				(s.DstPackage == s.SrcPackage || importName != s.SrcPackage) {
 				continue
 			}
-			fmt.Println(importVal.ToImport())
 			importBuffer = append(importBuffer, importVal.ToImport())
 		}
-		fmt.Println(len(importBuffer))
 
 		if len(importBuffer) == 1 {
 			srcBuilder.WriteString("\n\nimport ")

@@ -14,9 +14,9 @@ func ParseAndWriteBuilderFile(configs []*cmd.Config, logWrapper cmd.PrinterFn) {
 	cfgChannel := make(chan cmd.ConfigChan, len(configs))
 	for _, conf := range configs {
 		go func() {
-			IsDstSameAsSrc := path.Dir(conf.Source) != path.Dir(conf.Destination)
+			IsDstSameAsSrc := path.Dir(conf.Source) == path.Dir(conf.Destination)
 			if !IsDstSameAsSrc && conf.Package == "" {
-				logWrapper("Package name is required when destination is different from source")
+				logWrapper("Package name is required when destination (%s) is different from source (%s)", conf.Destination, conf.Source)
 				cfgChannel <- cmd.ConfigChan{
 					Err: fmt.Errorf("package name is required when destination is different from source"),
 				}

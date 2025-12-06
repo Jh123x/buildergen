@@ -58,8 +58,8 @@ func parseDataByAST(config *cmd.Config, scanner *bufio.Reader, helper *generatio
 	return nil
 }
 
-func importPathFromFile(f string) (string, error) {
-	abs, err := filepath.Abs(f)
+func importPathFromFile(filePath string) (string, error) {
+	abs, err := filepath.Abs(filePath)
 	if err != nil {
 		return "", err
 	}
@@ -73,6 +73,7 @@ func importPathFromFile(f string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	if len(pkgs) == 0 {
 		return "", fmt.Errorf("no package found")
 	}
