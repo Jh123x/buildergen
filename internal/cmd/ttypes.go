@@ -47,8 +47,7 @@ func NewConfig(src, dst, pkg, name string, validation bool, parserMode consts.Mo
 		return nil, err
 	}
 
-	config, err = config.FillDefaults()
-	if err != nil {
+	if _, err := config.FillDefaults(); err != nil {
 		return nil, err
 	}
 

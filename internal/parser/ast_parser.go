@@ -75,7 +75,7 @@ func importPathFromFile(filePath string) (string, error) {
 	}
 
 	if len(pkgs) == 0 {
-		return "", fmt.Errorf("no package found")
+		return "", fmt.Errorf("no package found for %s", filePath)
 	}
 
 	return pkgs[0].PkgPath, nil
