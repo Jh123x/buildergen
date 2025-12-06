@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//go:generate buildergen -src ttypes_test.go -name testCase -dst ttypes_builder_test.go
+//go:generate buildergen --src=ttypes_test.go --name=testCase --dst=ttypes_builder_test.go
 
 type testCase struct {
 	src            string
