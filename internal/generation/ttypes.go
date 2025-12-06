@@ -104,7 +104,7 @@ func (s *StructGenHelper) ToSource() string {
 	srcBuilder := strings.Builder{}
 	srcBuilder.WriteString(consts.BUILD_HEADER)
 	srcBuilder.WriteString("\n")
-	srcBuilder.WriteString("// Generated using:")
+	srcBuilder.WriteString("// Generated using: ")
 	srcBuilder.WriteString(s.GenerationCmd)
 	srcBuilder.WriteString("\n")
 	srcBuilder.WriteString(consts.BUILD_PACKAGE)
