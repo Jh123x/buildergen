@@ -25,6 +25,9 @@ func parseDataByAST(config *cmd.Config, scanner *bufio.Reader, helper *generatio
 		return fmt.Errorf("invalid package name")
 	}
 
+	if !config.IncGenCmd {
+		helper.GenerationCmd = ""
+	}
 	helper.SrcPackage = astFile.Name.Name
 	helper.DstPackage = helper.SrcPackage
 	if config.Package != "" {

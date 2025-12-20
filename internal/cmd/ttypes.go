@@ -21,6 +21,7 @@ type Config struct {
 	Name           string      `yaml:"name"`
 	WithValidation bool        `yaml:"with-validation"`
 	ParserMode     consts.Mode `yaml:"mode"`
+	IncGenCmd      bool        `yaml:"inc-cmd"`
 	generationCmd  string
 }
 
@@ -40,6 +41,7 @@ func NewConfig(src, dst, pkg, name string, validation, incCmd bool, parserMode c
 		Destination:    dst,
 		WithValidation: validation,
 		ParserMode:     parserMode,
+		IncGenCmd:      incCmd,
 	}
 
 	generationCmd, err := config.ToCommand()
