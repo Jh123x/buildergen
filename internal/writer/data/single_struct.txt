@@ -6,7 +6,6 @@ import (
 	"strings"
 )
 
-// Generated using:
 type testBuilder struct {
 	test  generation.Field
 	test2 strings.Builder
