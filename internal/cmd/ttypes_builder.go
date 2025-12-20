@@ -11,6 +11,7 @@ type ConfigBuilder struct {
 	Name           string      `yaml:"name"`
 	WithValidation bool        `yaml:"with-validation"`
 	ParserMode     consts.Mode `yaml:"mode"`
+	IncGenCmd      bool        `yaml:"inc-cmd"`
 	generationCmd  string
 }
 
@@ -26,6 +27,7 @@ func NewConfigBuilder(b *Config) *ConfigBuilder {
 		Name:           b.Name,
 		WithValidation: b.WithValidation,
 		ParserMode:     b.ParserMode,
+		IncGenCmd:      b.IncGenCmd,
 		generationCmd:  b.generationCmd,
 	}
 }
@@ -60,6 +62,11 @@ func (b *ConfigBuilder) WithParserMode(parserMode consts.Mode) *ConfigBuilder {
 	return b
 }
 
+func (b *ConfigBuilder) WithIncGenCmd(incGenCmd bool) *ConfigBuilder {
+	b.IncGenCmd = incGenCmd
+	return b
+}
+
 func (b *ConfigBuilder) WithgenerationCmd(generationCmd string) *ConfigBuilder {
 	b.generationCmd = generationCmd
 	return b
@@ -73,6 +80,7 @@ func (b *ConfigBuilder) Build() *Config {
 		Name:           b.Name,
 		WithValidation: b.WithValidation,
 		ParserMode:     b.ParserMode,
+		IncGenCmd:      b.IncGenCmd,
 		generationCmd:  b.generationCmd,
 	}
 }

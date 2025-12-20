@@ -3,7 +3,6 @@ package benchmark
 
 import "github.com/Jh123x/buildergen/examples"
 
-// Generated using: buildergen --src=./examples/benchmark/benchmark.go --name=Data --dst=./examples/benchmark/benchmark_builder.go
 type DataBuilder struct {
 	Person     *examples.Person
 	SpareData  int

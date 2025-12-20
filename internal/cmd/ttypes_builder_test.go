@@ -3,7 +3,6 @@ package cmd
 
 import "github.com/Jh123x/buildergen/internal/consts"
 
-// Generated using: buildergen --src=./internal/cmd/ttypes_test.go --name=testCase --dst=./internal/cmd/ttypes_builder_test.go
 type testCaseBuilder struct {
 	src            string
 	dst            string

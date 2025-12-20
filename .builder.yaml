@@ -1,6 +1,7 @@
 configs:
   - source: ./internal/cmd/ttypes.go
     name: Config
+    inc-cmd: true
   - source: ./internal/cmd/ttypes_test.go
     name: testCase
     destination: ./internal/cmd/ttypes_builder_test.go

@@ -7,7 +7,6 @@ import (
 	"os"
 )
 
-// Generated using: buildergen --src=./examples/person.go --name=UnRelated --dst=./examples/person_builder.go
 type UnRelatedBuilder struct {
 	importOpts *imports.Options
 	otherOpts  *os.FileMode
@@ -41,7 +40,6 @@ func (b *UnRelatedBuilder) Build() *UnRelated {
 	}
 }
 
-// Generated using: buildergen --src=./examples/person.go --name=Person --dst=./examples/person_builder.go
 type PersonBuilder struct {
 	ID        int
 	Name      string
