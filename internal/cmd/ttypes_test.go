@@ -77,7 +77,7 @@ func TestNewConfig(t *testing.T) {
 			WithexpectedConfig(
 				NewConfigBuilder(defaultConfig).
 					WithDestination("test_src_builder.go").
-					WithgenerationCmd("buildergen --src=test_src.go --name=TestCase --dst=test_dst.go").
+					WithgenerationCmd("buildergen --src=test_src.go --name=TestCase --pkg=test").
 					Build(),
 			).Build(),
 		"empty pkg should return default pkg": NewtestCaseBuilder(defaultSuccessTestCase).
@@ -85,6 +85,7 @@ func TestNewConfig(t *testing.T) {
 			WithexpectedConfig(
 				NewConfigBuilder(defaultConfig).
 					WithPackage(consts.EMPTY_STR).
+					WithgenerationCmd("buildergen --src=test_src.go --name=TestCase --dst=test_dst.go").
 					Build(),
 			).Build(),
 	}
