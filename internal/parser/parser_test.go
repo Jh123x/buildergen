@@ -68,13 +68,14 @@ func TestParseBuilderFile(t *testing.T) {
 		},
 	}
 
-	currDir, err := os.Getwd()
+	_, err := os.Getwd()
 	assert.Nil(t, err)
 
 	for name, tc := range tests {
 		if tc.config != nil {
-			tc.config.Source = filepath.Join(currDir, tc.config.Source)
-			tc.expectedFileRes = filepath.Join(currDir, tc.expectedFileRes)
+			tc.config.Source = filepath.Join(
+				tc.config.Source)
+			tc.expectedFileRes = filepath.Join(tc.expectedFileRes)
 		}
 
 		t.Log(tc.config.Source)
