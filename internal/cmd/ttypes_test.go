@@ -29,7 +29,7 @@ const (
 	notGoSrc             = "not_go_ext"
 	defaultValidation    = false
 	defaultParserMode    = consts.MODE_AST
-	defaultGenerationCmd = "buildergen --src=test_src.go --name=TestCase --dst=test_dst.go"
+	defaultGenerationCmd = "buildergen --src=test_src.go --name=TestCase --dst=test_dst.go --pkg=test"
 )
 
 var (
