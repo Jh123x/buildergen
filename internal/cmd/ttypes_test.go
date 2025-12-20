@@ -39,6 +39,7 @@ var (
 		Name:           defaultName,
 		WithValidation: defaultValidation,
 		ParserMode:     defaultParserMode,
+		generationCmd:  "buildergen --src=test_src.go --name=TestCase --dst=test_dst.go --pkg=test",
 	}
 	defaultSuccessTestCase = &testCase{
 		src:            defaultSrc,
