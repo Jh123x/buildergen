@@ -40,6 +40,7 @@ var (
 		Name:           defaultName,
 		WithValidation: defaultValidation,
 		ParserMode:     defaultParserMode,
+		IncGenCmd:      true,
 		generationCmd:  defaultGenerationCmd,
 	}
 	defaultSuccessTestCase = &testCase{
