@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// Generated using:
 type TestBuilder struct {
 	Val          string
 	ImportedType *os.FileMode
@@ -39,6 +40,7 @@ func (b *TestBuilder) Build() *Test {
 	}
 }
 
+// Generated using:
 type OtherStructBuilder struct {
 	OtherImports context.Context
 }
