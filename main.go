@@ -25,6 +25,7 @@ func main() {
 		dest           = flag.String("dst", consts.EMPTY_STR, "the destination file path, default: {src_dir}/{src}_builder.go")
 		pkg            = flag.String("pkg", consts.EMPTY_STR, "the package name of the generated file, default: {src pkg}")
 		withValidation = flag.Bool("validate", false, "validate the syntax of the original file, default: false")
+		withGenCmd     = flag.Bool("w-gen-cmd", true, "include the command used to generate the file, default: true")
 
 		configFile = flag.String("config", consts.EMPTY_STR, "the config file for buildergen")
 		configs    []*cmd.Config
@@ -44,7 +45,7 @@ func main() {
 	}
 
 	if !utils.IsNilOrEmpty(src) {
-		config, err := cmd.NewConfig(*src, *dest, *pkg, *name, *withValidation, consts.MODE_AST)
+		config, err := cmd.NewConfig(*src, *dest, *pkg, *name, *withValidation, *withGenCmd, consts.MODE_AST)
 		if err != nil {
 			cmd.GetUsage(logWrapper)
 			logWrapper("Error parsing config file: %s", err.Error())
