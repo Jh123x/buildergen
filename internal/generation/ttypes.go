@@ -147,8 +147,8 @@ func (s *StructGenHelper) BuildStruct() string {
 	if s.GenerationCmd != "" {
 		srcBuilder.WriteString("// Generated using: ")
 		srcBuilder.WriteString(s.GenerationCmd)
+		srcBuilder.WriteString("\n")
 	}
-	srcBuilder.WriteString("\n")
 	srcBuilder.WriteString("type ")
 	srcBuilder.WriteString(s.Name)
 	srcBuilder.WriteString("Builder struct {\n")
