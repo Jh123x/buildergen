@@ -144,8 +144,10 @@ func (s *StructGenHelper) ToSource() string {
 func (s *StructGenHelper) BuildStruct() string {
 	s.preprocess()
 	srcBuilder := strings.Builder{}
-	srcBuilder.WriteString("// Generated using: ")
-	srcBuilder.WriteString(s.GenerationCmd)
+	if s.GenerationCmd != "" {
+		srcBuilder.WriteString("// Generated using: ")
+		srcBuilder.WriteString(s.GenerationCmd)
+	}
 	srcBuilder.WriteString("\n")
 	srcBuilder.WriteString("type ")
 	srcBuilder.WriteString(s.Name)

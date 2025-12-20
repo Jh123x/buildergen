@@ -92,7 +92,7 @@ func TestNewConfig(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			cfg, err := NewConfig(tc.src, tc.dst, tc.pkg, tc.name, tc.withValidation, tc.parserMode)
+			cfg, err := NewConfig(tc.src, tc.dst, tc.pkg, tc.name, tc.withValidation, true, tc.parserMode)
 			assert.Equal(t, tc.expectedConfig, cfg)
 			assert.Equal(t, tc.expectedErr, err)
 		})

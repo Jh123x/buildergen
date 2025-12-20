@@ -32,7 +32,7 @@ type ConfigChan struct {
 
 // NewConfig creates a new config with the given arguments.
 // It also initializes the default values config arguments.
-func NewConfig(src, dst, pkg, name string, validation bool, parserMode consts.Mode) (*Config, error) {
+func NewConfig(src, dst, pkg, name string, validation, incCmd bool, parserMode consts.Mode) (*Config, error) {
 	config := &Config{
 		Source:         src,
 		Name:           name,

@@ -3,7 +3,6 @@ package data
 
 import "os"
 
-// Generated using: buildergen --src=./internal/parser/data/nest.go --name=Test --pkg=data
 type TestBuilder struct {
 	Val          string
 	ImportedType *os.FileMode
