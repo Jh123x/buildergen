@@ -22,13 +22,14 @@ type testCase struct {
 }
 
 const (
-	defaultSrc        = "test_src.go"
-	defaultDst        = "test_dst.go"
-	defaultPkg        = "test"
-	defaultName       = "TestCase"
-	notGoSrc          = "not_go_ext"
-	defaultValidation = false
-	defaultParserMode = consts.MODE_AST
+	defaultSrc           = "test_src.go"
+	defaultDst           = "test_dst.go"
+	defaultPkg           = "test"
+	defaultName          = "TestCase"
+	notGoSrc             = "not_go_ext"
+	defaultValidation    = false
+	defaultParserMode    = consts.MODE_AST
+	defaultGenerationCmd = "buildergen --src=test_src.go --name=TestCase --dst=test_dst.go"
 )
 
 var (
@@ -39,7 +40,7 @@ var (
 		Name:           defaultName,
 		WithValidation: defaultValidation,
 		ParserMode:     defaultParserMode,
-		generationCmd:  "buildergen --src=test_src.go --name=TestCase --dst=test_dst.go --pkg=test",
+		generationCmd:  defaultGenerationCmd,
 	}
 	defaultSuccessTestCase = &testCase{
 		src:            defaultSrc,
@@ -76,6 +77,7 @@ func TestNewConfig(t *testing.T) {
 			WithexpectedConfig(
 				NewConfigBuilder(defaultConfig).
 					WithDestination("test_src_builder.go").
+					WithgenerationCmd("buildergen --src=test_src.go --name=TestCase --dst=test_dst.go").
 					Build(),
 			).Build(),
 		"empty pkg should return default pkg": NewtestCaseBuilder(defaultSuccessTestCase).
