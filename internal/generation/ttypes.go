@@ -3,6 +3,7 @@ package generation
 import (
 	"fmt"
 	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/Jh123x/buildergen/internal/consts"
@@ -16,6 +17,10 @@ type Import struct {
 
 func (i *Import) ToImport() string {
 	if len(i.Name) == 0 {
+		return i.Path
+	}
+
+	if i.Name+"\"" == filepath.Base(i.Path) {
 		return i.Path
 	}
 
@@ -45,11 +50,17 @@ func (f *Field) GetUsedPackageName() string {
 	return strings.TrimPrefix(name, "*")
 }
 
+func (f *Field) BuildType() string {
+	return f.Type
+}
+
 type StructGenHelper struct {
-	Name    string
-	Package string
-	Fields  []*Field
-	Imports []*Import
+	Name          string
+	SrcPackage    string
+	Fields        []*Field
+	Imports       []*Import
+	DstPackage    string
+	GenerationCmd string
 
 	// Used Internally
 	maxFieldLen  int
@@ -80,8 +91,9 @@ func (s *StructGenHelper) preprocess() {
 				s.maxFieldLen = len(f.Name)
 			}
 
-			if len(f.Type) > s.maxTypeLen {
-				s.maxTypeLen = len(f.Type)
+			typeLen := f.BuildType()
+			if len(typeLen) > s.maxTypeLen {
+				s.maxTypeLen = len(typeLen)
 			}
 		}
 	}
@@ -94,16 +106,16 @@ func (s *StructGenHelper) ToSource() string {
 	srcBuilder.WriteString("\n")
 	srcBuilder.WriteString(consts.BUILD_PACKAGE)
 	srcBuilder.WriteString(" ")
-	srcBuilder.WriteString(s.Package)
+	srcBuilder.WriteString(s.DstPackage)
 
 	if len(s.usedPackages) > 0 {
 		importBuffer := make([]string, 0, len(s.Imports))
 		for _, importVal := range s.Imports {
 			importName := importVal.GetName()
-			if !s.usedPackages.Has(importName) {
+			if !s.usedPackages.Has(importName) &&
+				(s.DstPackage == s.SrcPackage || importName != s.SrcPackage) {
 				continue
 			}
-
 			importBuffer = append(importBuffer, importVal.ToImport())
 		}
 
@@ -114,9 +126,9 @@ func (s *StructGenHelper) ToSource() string {
 
 		if len(importBuffer) > 1 {
 			srcBuilder.WriteString("\n\nimport (\n")
-			for _, val := range s.Imports {
+			for _, val := range importBuffer {
 				srcBuilder.WriteString("\t")
-				srcBuilder.WriteString(val.ToImport())
+				srcBuilder.WriteString(val)
 				srcBuilder.WriteString("\n")
 			}
 			srcBuilder.WriteString(")")
@@ -132,6 +144,11 @@ func (s *StructGenHelper) ToSource() string {
 func (s *StructGenHelper) BuildStruct() string {
 	s.preprocess()
 	srcBuilder := strings.Builder{}
+	if s.GenerationCmd != "" {
+		srcBuilder.WriteString("// Generated using: ")
+		srcBuilder.WriteString(s.GenerationCmd)
+		srcBuilder.WriteString("\n")
+	}
 	srcBuilder.WriteString("type ")
 	srcBuilder.WriteString(s.Name)
 	srcBuilder.WriteString("Builder struct {\n")
@@ -139,7 +156,7 @@ func (s *StructGenHelper) BuildStruct() string {
 		srcBuilder.WriteString("\t")
 		srcBuilder.WriteString(field.Name)
 		srcBuilder.WriteString(strings.Repeat(" ", s.maxFieldLen-len(field.Name)+1))
-		srcBuilder.WriteString(field.Type)
+		srcBuilder.WriteString(field.BuildType())
 		if len(field.Tags) > 0 {
 			srcBuilder.WriteString(strings.Repeat(" ", s.maxTypeLen-len(field.Type)+1))
 			srcBuilder.WriteString(field.Tags)
@@ -163,6 +180,10 @@ func (s *StructGenHelper) genNewMethod(builder *strings.Builder) {
 	builder.WriteString("func New")
 	builder.WriteString(s.Name)
 	builder.WriteString("Builder(b *")
+	if s.DstPackage != s.SrcPackage {
+		builder.WriteString(s.SrcPackage)
+		builder.WriteString(".")
+	}
 	builder.WriteString(s.Name)
 	builder.WriteString(") *")
 	builder.WriteString(s.Name)
@@ -194,7 +215,7 @@ func (s *StructGenHelper) genMethod(builder *strings.Builder, field *Field) stri
 	builder.WriteString("(")
 	builder.WriteString(paramName)
 	builder.WriteString(" ")
-	builder.WriteString(field.Type)
+	builder.WriteString(field.BuildType())
 	builder.WriteString(") *")
 	builder.WriteString(s.Name)
 	builder.WriteString("Builder {\n\tb.")
@@ -210,8 +231,16 @@ func (s *StructGenHelper) genBuildMethod(builder *strings.Builder) string {
 	builder.WriteString("func (b *")
 	builder.WriteString(s.Name)
 	builder.WriteString("Builder) Build() *")
+	if s.DstPackage != s.SrcPackage {
+		builder.WriteString(s.SrcPackage)
+		builder.WriteString(".")
+	}
 	builder.WriteString(s.Name)
 	builder.WriteString(" {\n\treturn &")
+	if s.DstPackage != s.SrcPackage {
+		builder.WriteString(s.SrcPackage)
+		builder.WriteString(".")
+	}
 	builder.WriteString(s.Name)
 	builder.WriteString("{\n")
 

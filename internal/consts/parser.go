@@ -3,13 +3,9 @@ package consts
 type Mode string
 
 const (
-	MODE_AST  Mode = "DEFAULT"
-	MODE_FAST Mode = "FAST"
+	MODE_AST Mode = "DEFAULT"
 )
 
 var (
-	ALL_MODES = []Mode{
-		MODE_FAST,
-		MODE_AST,
-	}
+	ALL_MODES = []Mode{MODE_AST}
 )

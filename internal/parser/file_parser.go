@@ -14,12 +14,16 @@ func ParseAndWriteBuilderFile(configs []*cmd.Config, logWrapper cmd.PrinterFn) {
 	cfgChannel := make(chan cmd.ConfigChan, len(configs))
 	for _, conf := range configs {
 		go func() {
-			if path.Dir(conf.Source) != path.Dir(conf.Destination) {
-				cfgChannel <- cmd.ConfigChan{Err: fmt.Errorf("[%s::%s] dest in different path from destination is currently not supported", conf.Source, conf.Name)}
+			IsDstSameAsSrc := path.Dir(conf.Source) == path.Dir(conf.Destination)
+			if !IsDstSameAsSrc && conf.Package == "" {
+				logWrapper("Package name is required when destination (%s) is different from source (%s)", conf.Destination, conf.Source)
+				cfgChannel <- cmd.ConfigChan{
+					Err: fmt.Errorf("package name is required when destination is different from source"),
+				}
 				return
 			}
 
-			res, err := ParseBuilderFile(conf)
+			res, err := ParseBuilderFile(conf, IsDstSameAsSrc)
 			cfgChannel <- cmd.ConfigChan{
 				StructHelper: res,
 				Destination:  conf.Destination,
@@ -31,7 +35,7 @@ func ParseAndWriteBuilderFile(configs []*cmd.Config, logWrapper cmd.PrinterFn) {
 	// Collect the result and write to file
 	mapperData := make(map[string][]cmd.ConfigChan, len(configs))
 
-	for i := 0; i < len(configs); i++ {
+	for _ = range configs {
 		res := <-cfgChannel
 		if res.Err != nil {
 			logWrapper("%s\n", res.Err.Error())

@@ -2,6 +2,7 @@ package parser
 
 import (
 	"bufio"
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -20,8 +21,17 @@ func parseDataByAST(config *cmd.Config, scanner *bufio.Reader, helper *generatio
 		return err
 	}
 
-	if len(helper.Package) == 0 && astFile.Package.IsValid() {
-		helper.Package = astFile.Name.Name
+	if !astFile.Package.IsValid() {
+		return fmt.Errorf("invalid package name")
+	}
+
+	if !config.IncGenCmd {
+		helper.GenerationCmd = ""
+	}
+	helper.SrcPackage = astFile.Name.Name
+	helper.DstPackage = helper.SrcPackage
+	if config.Package != "" {
+		helper.DstPackage = config.Package
 	}
 
 	res, ok := findRequestedStructType(astFile, config.Name)
@@ -29,8 +39,20 @@ func parseDataByAST(config *cmd.Config, scanner *bufio.Reader, helper *generatio
 		return consts.ErrNoStructsFound
 	}
 
-	helper.Imports = parseData(astFile.Imports)
+	importFiles := parseData(astFile.Imports)
+	if helper.SrcPackage != helper.DstPackage {
+		res, err := importPathFromFile(config.Source)
+		if err != nil {
+			return err
+		}
 
+		importFiles = append(importFiles, &generation.Import{
+			Name: helper.SrcPackage,
+			Path: "\"" + res + "\"",
+		})
+	}
+
+	helper.Imports = importFiles
 	if err := generation.GenerateBuilder(res, helper); err != nil {
 		return err
 	}

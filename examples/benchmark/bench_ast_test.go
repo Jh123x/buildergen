@@ -11,26 +11,29 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var astConfig = &cmd.Config{
-	Source:      "./benchmark.go",
-	Destination: "./benchmark_builder.go",
-	Package:     "benchmark",
-	Name:        "Data",
-	ParserMode:  consts.MODE_AST,
-}
+var (
+	astConfig = &cmd.Config{
+		Source:      "./benchmark.go",
+		Destination: "./benchmark_builder.go",
+		Package:     "benchmark",
+		Name:        "Data",
+		ParserMode:  consts.MODE_AST,
+	}
+)
 
 func BenchmarkASTCodeGen(b *testing.B) {
+	expectedRes, err := os.ReadFile("./benchmark_builder.go")
+	assert.Nil(b, err)
 	for i := 0; i < b.N; i++ {
-		data, err := parser.ParseBuilderFile(astConfig)
+		data, err := parser.ParseBuilderFile(astConfig, true)
 		assert.Nil(b, err)
-
 		assert.Equal(b, string(expectedRes), data.ToSource())
 	}
 }
 
 func BenchmarkASTCodeGenWithIO(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		data, err := parser.ParseBuilderFile(astConfig)
+		data, err := parser.ParseBuilderFile(astConfig, true)
 		assert.Nil(b, err)
 
 		file, err := os.Create(astConfig.Destination)

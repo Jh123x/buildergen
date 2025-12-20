@@ -47,6 +47,7 @@ func TestParseConfigFile(t *testing.T) {
 					Destination: "./internal/cmd/ttypes_builder.go",
 					Name:        "Config",
 					ParserMode:  consts.MODE_AST,
+					IncGenCmd:   true,
 				},
 				{
 					Source:      "./internal/cmd/ttypes_test.go",
@@ -64,13 +65,13 @@ func TestParseConfigFile(t *testing.T) {
 					Source:      "./examples/person.go",
 					Destination: "./examples/person_builder.go",
 					Name:        "Person",
-					ParserMode:  consts.MODE_FAST,
+					ParserMode:  consts.MODE_AST,
 				},
 				{
 					Source:      "./examples/person.go",
 					Destination: "./examples/person_builder.go",
 					Name:        "UnRelated",
-					ParserMode:  consts.MODE_FAST,
+					ParserMode:  consts.MODE_AST,
 				},
 			},
 		},

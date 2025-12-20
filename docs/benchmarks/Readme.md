@@ -7,6 +7,7 @@ For each of the releases, I will aim to make this builder faster.
 ## Testing hardware
 
 This is completed on the following hardware
+
 1. CPU: AMD Ryzen 5 7600 (6 core processor)
 2. RAM: 32GB at 6000MT/s
 3. Storage: Samsung 960 Evo 500GB
@@ -34,3 +35,4 @@ The old code only contains CodeGen + I/O mode as I/O is tightly coupled to the i
 | v0.1.0       | 273165 ns/op             | 28255 ns/op             | Custom Parser                           |
 | v0.2.0       | 282231 ns/op             | 30701 ns/op             | Parsing by file + fix errors            |
 | v0.3.0       | 361820 ns/op             | 64590 ns/op             | Multi struct write to same file         |
+| v0.4.0       |                          |                         | Support generation to other packages    |

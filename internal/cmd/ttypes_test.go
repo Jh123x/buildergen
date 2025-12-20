@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//go:generate buildergen -src ttypes_test.go -name testCase -dst ttypes_builder_test.go
+//go:generate buildergen --src=ttypes_test.go --name=testCase --dst=ttypes_builder_test.go
 
 type testCase struct {
 	src            string
@@ -22,13 +22,14 @@ type testCase struct {
 }
 
 const (
-	defaultSrc        = "test_src.go"
-	defaultDst        = "test_dst.go"
-	defaultPkg        = "test"
-	defaultName       = "TestCase"
-	notGoSrc          = "not_go_ext"
-	defaultValidation = false
-	defaultParserMode = consts.MODE_AST
+	defaultSrc           = "test_src.go"
+	defaultDst           = "test_dst.go"
+	defaultPkg           = "test"
+	defaultName          = "TestCase"
+	notGoSrc             = "not_go_ext"
+	defaultValidation    = false
+	defaultParserMode    = consts.MODE_AST
+	defaultGenerationCmd = "buildergen --src=test_src.go --name=TestCase --dst=test_dst.go --pkg=test"
 )
 
 var (
@@ -39,6 +40,8 @@ var (
 		Name:           defaultName,
 		WithValidation: defaultValidation,
 		ParserMode:     defaultParserMode,
+		IncGenCmd:      true,
+		generationCmd:  defaultGenerationCmd,
 	}
 	defaultSuccessTestCase = &testCase{
 		src:            defaultSrc,
@@ -75,6 +78,7 @@ func TestNewConfig(t *testing.T) {
 			WithexpectedConfig(
 				NewConfigBuilder(defaultConfig).
 					WithDestination("test_src_builder.go").
+					WithgenerationCmd("buildergen --src=test_src.go --name=TestCase --pkg=test").
 					Build(),
 			).Build(),
 		"empty pkg should return default pkg": NewtestCaseBuilder(defaultSuccessTestCase).
@@ -82,21 +86,14 @@ func TestNewConfig(t *testing.T) {
 			WithexpectedConfig(
 				NewConfigBuilder(defaultConfig).
 					WithPackage(consts.EMPTY_STR).
+					WithgenerationCmd("buildergen --src=test_src.go --name=TestCase --dst=test_dst.go").
 					Build(),
 			).Build(),
-		"with parser mode should take parser mode": NewtestCaseBuilder(defaultSuccessTestCase).
-			WithparserMode(consts.MODE_FAST).
-			WithexpectedConfig(
-				NewConfigBuilder(defaultConfig).
-					WithParserMode(consts.MODE_FAST).
-					Build(),
-			).
-			Build(),
 	}
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			cfg, err := NewConfig(tc.src, tc.dst, tc.pkg, tc.name, tc.withValidation, tc.parserMode)
+			cfg, err := NewConfig(tc.src, tc.dst, tc.pkg, tc.name, tc.withValidation, true, tc.parserMode)
 			assert.Equal(t, tc.expectedConfig, cfg)
 			assert.Equal(t, tc.expectedErr, err)
 		})

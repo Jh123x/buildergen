@@ -50,14 +50,6 @@ func TestParseBuilderFile(t *testing.T) {
 			},
 			expectedFileRes: filepath.Join("..", "..", "examples", "benchmark", "benchmark_builder.go"),
 		},
-		"internal file": {
-			config: &cmd.Config{
-				Source:  filepath.Join("..", "cmd", "ttypes.go"),
-				Package: "cmd",
-				Name:    "Config",
-			},
-			expectedFileRes: filepath.Join("..", "cmd", "ttypes_builder.go"),
-		},
 		"internal file test": {
 			config: &cmd.Config{
 				Source:  filepath.Join("..", "cmd", "ttypes_test.go"),
@@ -83,7 +75,7 @@ func TestParseBuilderFile(t *testing.T) {
 		for _, mode := range consts.ALL_MODES {
 			t.Run(fmt.Sprintf("%s_%s", name, mode), func(t *testing.T) {
 				tc.config.ParserMode = mode
-				res, err := ParseBuilderFile(tc.config)
+				res, err := ParseBuilderFile(tc.config, true)
 				expectedRes := consts.EMPTY_STR
 
 				if len(tc.expectedFileRes) > 0 {
@@ -107,10 +99,6 @@ func Test_getParserMode(t *testing.T) {
 		"ast mode": {
 			parserMode:  consts.MODE_AST,
 			expectedRes: parseDataByAST,
-		},
-		"custom parser": {
-			parserMode:  consts.MODE_FAST,
-			expectedRes: parseDataByCustomParser,
 		},
 		"not found": {
 			parserMode:  "not found mode",

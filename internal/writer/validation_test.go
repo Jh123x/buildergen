@@ -149,25 +149,25 @@ func Test_mergePackage(t *testing.T) {
 		"only 1 struct": {
 			structs: []*generation.StructGenHelper{
 				{
-					Name:    "test",
-					Package: "test_package",
+					Name:        "test",
+					SrcPackage: "test_package",
 				},
 			},
 			expectedRes: "test_package",
 		},
 		"multiple non-conflict package": {
 			structs: []*generation.StructGenHelper{
-				{Name: "test", Package: "test_package"},
-				{Name: "test2", Package: "test_package"},
-				{Name: "test3", Package: "test_package"},
+				{Name: "test", SrcPackage: "test_package"},
+				{Name: "test2", SrcPackage: "test_package"},
+				{Name: "test3", SrcPackage: "test_package"},
 			},
 			expectedRes: "test_package",
 		},
 		"multiple conflict package": {
 			structs: []*generation.StructGenHelper{
-				{Name: "test", Package: "test_package"},
-				{Name: "test2", Package: "test_package2"},
-				{Name: "test3", Package: "test_package"},
+				{Name: "test", SrcPackage: "test_package"},
+				{Name: "test2", SrcPackage: "test_package2"},
+				{Name: "test3", SrcPackage: "test_package"},
 			},
 			expectedRes: consts.EMPTY_STR,
 			expectedErr: errors.New("multiple packages found within the same file: test_package, test_package2"),
