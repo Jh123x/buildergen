@@ -86,15 +86,15 @@ func (c *Config) FillDefaults() (*Config, error) {
 
 func (c *Config) ToCommand() (string, error) {
 	if c == nil {
-		return "", fmt.Errorf("invalid config")
+		return "", consts.ErrInvalidConfigFile
 	}
 
 	if c.Source == "" {
-		return "", fmt.Errorf("source file not found")
+		return "", consts.ErrSrcNotFound
 	}
 
 	if c.Name == "" {
-		return "", fmt.Errorf("struct name not found")
+		return "", consts.ErrNameNotFound
 	}
 
 	cmd := strings.Builder{}

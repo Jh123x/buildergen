@@ -7,13 +7,18 @@ import (
 )
 
 const (
-	ErrMsgSrcNotfound       = "source file is required"
-	ErrMsgNoStructsFound    = "source file has no structs"
-	ErrMsgNameNotFound      = "name is required"
-	ErrMsgTypeNotFound      = "type not found for field"
-	ErrMsgNotGoFile         = "source is not a valid go file"
-	ErrMsgInvalidStruct     = "invalid struct type"
-	ErrMsgInvalidConfigFile = "invalid config file"
+	ErrMsgSrcNotfound          = "source file is required"
+	ErrMsgNoStructsFound       = "source file has no structs"
+	ErrMsgNameNotFound         = "name is required"
+	ErrMsgTypeNotFound         = "type not found for field"
+	ErrMsgNotGoFile            = "source is not a valid go file"
+	ErrMsgInvalidStruct        = "invalid struct type"
+	ErrMsgInvalidConfigFile    = "invalid config file"
+	ErrMsgSyntax               = "syntax error"
+	ErrMsgPkgNotFound          = "package not found"
+	ErrMsgTargetStructNotFound = "target struct is not found"
+	ErrMsgDone                 = "done"
+	ErrMsgInvalidParserMode    = "invalid parser mode"
 )
 
 var (
@@ -23,12 +28,12 @@ var (
 	ErrTypeNotfound      = errors.New(ErrMsgTypeNotFound)
 	ErrNotGoFile         = errors.New(ErrMsgNotGoFile)
 	ErrInvalidStructType = errors.New(ErrMsgInvalidStruct)
-	ErrSyntaxErr         = errors.New("syntax error")
-	ErrPackageNotFound   = errors.New("package not found")
-	ErrNotFound          = errors.New("target struct is not found")
-	ErrDone              = errors.New("done")
+	ErrSyntaxErr         = errors.New(ErrMsgSyntax)
+	ErrPackageNotFound   = errors.New(ErrMsgPkgNotFound)
+	ErrNotFound          = errors.New(ErrMsgTargetStructNotFound)
+	ErrDone              = errors.New(ErrMsgDone)
 	ErrInvalidConfigFile = errors.New(ErrMsgInvalidConfigFile)
-	ErrInvalidParserMode = errors.New("invalid Parser Mode")
+	ErrInvalidParserMode = errors.New(ErrMsgInvalidParserMode)
 
 	ImportOptions = &imports.Options{
 		FormatOnly: false,
