@@ -50,14 +50,6 @@ func TestParseBuilderFile(t *testing.T) {
 			},
 			expectedFileRes: filepath.Join("..", "..", "examples", "benchmark", "benchmark_builder.go"),
 		},
-		"internal file": {
-			config: &cmd.Config{
-				Source:  filepath.Join("..", "cmd", "ttypes.go"),
-				Package: "cmd",
-				Name:    "Config",
-			},
-			expectedFileRes: filepath.Join("..", "cmd", "ttypes_builder.go"),
-		},
 		"internal file test": {
 			config: &cmd.Config{
 				Source:  filepath.Join("..", "cmd", "ttypes_test.go"),

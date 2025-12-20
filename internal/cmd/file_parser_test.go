@@ -47,6 +47,7 @@ func TestParseConfigFile(t *testing.T) {
 					Destination: "./internal/cmd/ttypes_builder.go",
 					Name:        "Config",
 					ParserMode:  consts.MODE_AST,
+					IncGenCmd:   true,
 				},
 				{
 					Source:      "./internal/cmd/ttypes_test.go",
