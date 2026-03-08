@@ -1,3 +1,0 @@
-configs:
-- source: ./internal/cmd/ttypes
-  name: Config

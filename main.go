@@ -7,10 +7,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/Jh123x/buildergen/internal/cmd"
-	"github.com/Jh123x/buildergen/internal/consts"
-	"github.com/Jh123x/buildergen/internal/parser"
-	"github.com/Jh123x/buildergen/internal/utils"
+	"github.com/Jh123x/buildergen/pkg/cmd"
+	"github.com/Jh123x/buildergen/pkg/consts"
+	"github.com/Jh123x/buildergen/pkg/parser"
+	"github.com/Jh123x/buildergen/pkg/utils"
 )
 
 func logWrapper(s string, a ...any) (int, error) {

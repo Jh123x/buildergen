@@ -1,0 +1,61 @@
+package parser
+
+import (
+	"fmt"
+	"path"
+
+	"github.com/Jh123x/buildergen/pkg/cmd"
+	"github.com/Jh123x/buildergen/pkg/generation"
+	"github.com/Jh123x/buildergen/pkg/utils"
+	"github.com/Jh123x/buildergen/pkg/writer"
+)
+
+func ParseAndWriteBuilderFile(configs []*cmd.Config, logWrapper cmd.PrinterFn) {
+	cfgChannel := make(chan cmd.ConfigChan, len(configs))
+	for _, conf := range configs {
+		go func() {
+			IsDstSameAsSrc := path.Dir(conf.Source) == path.Dir(conf.Destination)
+			if !IsDstSameAsSrc && conf.Package == "" {
+				logWrapper("Package name is required when destination (%s) is different from source (%s)", conf.Destination, conf.Source)
+				cfgChannel <- cmd.ConfigChan{
+					Err: fmt.Errorf("package name is required when destination is different from source"),
+				}
+				return
+			}
+
+			res, err := ParseBuilderFile(conf, IsDstSameAsSrc)
+			cfgChannel <- cmd.ConfigChan{
+				StructHelper: res,
+				Destination:  conf.Destination,
+				Err:          err,
+			}
+		}()
+	}
+
+	// Collect the result and write to file
+	mapperData := make(map[string][]cmd.ConfigChan, len(configs))
+
+	for _ = range configs {
+		res := <-cfgChannel
+		if res.Err != nil {
+			logWrapper("%s\n", res.Err.Error())
+			continue
+		}
+		mapperData[res.Destination] = append(mapperData[res.Destination], res)
+	}
+
+	for filePath, cfgs := range mapperData {
+		if err := writer.MultiFileWrite(
+			filePath,
+			utils.Map(
+				cfgs,
+				func(cfg cmd.ConfigChan) *generation.StructGenHelper {
+					return cfg.StructHelper
+				},
+			)...,
+		); err != nil {
+			logWrapper("%s\n", err.Error())
+			return
+		}
+	}
+}
