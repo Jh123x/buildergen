@@ -13,4 +13,7 @@ RUN go install golang.org/x/tools/gopls@latest && \
 # Ensure the Go toolchain and Go bin directory are in the PATH
 ENV PATH="/usr/local/go/bin:/go/bin:${PATH}"
 
+# Restore PATH for shells that might have it overwritten (like Zed)
+RUN echo 'export PATH="/usr/local/go/bin:/go/bin:${PATH}"' >> /root/.bashrc
+
 WORKDIR /workspaces/buildergen
