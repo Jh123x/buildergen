@@ -5,7 +5,7 @@ import (
 	"path"
 
 	"github.com/Jh123x/buildergen/pkg/cmd"
-	"github.com/Jh123x/buildergen/pkg/generation"
+	"github.com/Jh123x/buildergen/pkg/model"
 	"github.com/Jh123x/buildergen/pkg/utils"
 	"github.com/Jh123x/buildergen/pkg/writer"
 )
@@ -17,14 +17,14 @@ func ParseAndWriteBuilderFile(configs []*cmd.Config, logWrapper cmd.PrinterFn) {
 			IsDstSameAsSrc := path.Dir(conf.Source) == path.Dir(conf.Destination)
 			if !IsDstSameAsSrc && conf.Package == "" {
 				logWrapper("Package name is required when destination (%s) is different from source (%s)", conf.Destination, conf.Source)
-				cfgChannel <- cmd.ConfigChan{
+				cfgChannel <- model.ConfigChan{
 					Err: fmt.Errorf("package name is required when destination is different from source"),
 				}
 				return
 			}
 
 			res, err := ParseBuilderFile(conf, IsDstSameAsSrc)
-			cfgChannel <- cmd.ConfigChan{
+			cfgChannel <- model.ConfigChan{
 				StructHelper: res,
 				Destination:  conf.Destination,
 				Err:          err,
@@ -33,7 +33,7 @@ func ParseAndWriteBuilderFile(configs []*cmd.Config, logWrapper cmd.PrinterFn) {
 	}
 
 	// Collect the result and write to file
-	mapperData := make(map[string][]cmd.ConfigChan, len(configs))
+	mapperData := make(map[string][]model.ConfigChan, len(configs))
 
 	for _ = range configs {
 		res := <-cfgChannel
@@ -49,7 +49,7 @@ func ParseAndWriteBuilderFile(configs []*cmd.Config, logWrapper cmd.PrinterFn) {
 			filePath,
 			utils.Map(
 				cfgs,
-				func(cfg cmd.ConfigChan) *generation.StructGenHelper {
+				func(cfg model.ConfigChan) *model.StructGenHelper {
 					return cfg.StructHelper
 				},
 			)...,

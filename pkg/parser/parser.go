@@ -10,6 +10,7 @@ import (
 	"github.com/Jh123x/buildergen/pkg/cmd"
 	"github.com/Jh123x/buildergen/pkg/consts"
 	"github.com/Jh123x/buildergen/pkg/generation"
+	"github.com/Jh123x/buildergen/pkg/model"
 )
 
 type parserFn func(config *cmd.Config, scanner *bufio.Reader, helper *generation.StructGenHelper) error
@@ -59,9 +60,9 @@ func ParseBuilderFile(config *cmd.Config, isDstPkgSameAsSrc bool) (*generation.S
 	return structHelper, nil
 }
 
-func getParserMode(parserMode consts.Mode) parserFn {
+func getParserMode(parserMode model.Mode) parserFn {
 	switch parserMode {
-	case consts.MODE_AST:
+	case model.MODE_AST:
 		return parseDataByAST
 	default:
 		return nil

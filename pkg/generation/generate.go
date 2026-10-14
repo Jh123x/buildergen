@@ -3,21 +3,21 @@ package generation
 import (
 	"go/ast"
 	"log"
-	"slices"
 	"strings"
 
-	"github.com/Jh123x/buildergen/pkg/consts"
+	"github.com/Jh123x/buildergen/pkg/common"
+	"github.com/Jh123x/buildergen/pkg/model"
 )
 
 // GenerateBuilder generates the builder source code based on the given arguments.
-func GenerateBuilder(typeSpec *ast.TypeSpec, structHelper *StructGenHelper) error {
+func GenerateBuilder(typeSpec *ast.TypeSpec, structHelper *model.StructGenHelper) error {
 	if typeSpec.Type == nil {
-		return consts.ErrNoStructsFound
+		return common.ErrNoStructsFound
 	}
 
 	typed, ok := typeSpec.Type.(*ast.StructType)
 	if !ok {
-		return consts.ErrInvalidStructType
+		return common.ErrInvalidStructType
 	}
 
 	if err := generateStructFields(structHelper, typed); err != nil {
@@ -27,99 +27,64 @@ func GenerateBuilder(typeSpec *ast.TypeSpec, structHelper *StructGenHelper) erro
 	return nil
 }
 
-func generateStructFields(helper *StructGenHelper, structs *ast.StructType) error {
+func generateStructFields(helper *model.StructGenHelper, structs *ast.StructType) error {
 	for _, field := range structs.Fields.List {
-		builder := strings.Builder{}
-		if err := getName(field.Names, &builder); err != nil {
+		if len(field.Names) == 0 {
+			continue
+		}
+
+		name := field.Names[0].Name
+		var fieldRes model.Field
+
+		if err := getType(field.Type, &strings.Builder{}, &fieldRes, false, ""); err != nil {
 			return err
 		}
 
-		name := builder.String()
-		builder.Reset()
-		fieldRes := &Field{
-			Name: name,
-			Tags: getTag(field.Tag),
-		}
+		fieldRes.Name = name
 
-		if err := getType(
-			field.Type,
-			&builder,
-			fieldRes,
-			helper.SrcPackage != helper.DstPackage,
-			helper.SrcPackage,
-		); err != nil {
+		if err := getName(field.Names, &strings.Builder{}); err != nil {
 			return err
 		}
-		fieldRes.Type = builder.String()
-		helper.Fields = append(helper.Fields, fieldRes)
+
+		helper.Fields = append(helper.Fields, &fieldRes)
 	}
 
 	return nil
 }
 
-func getTag(tag *ast.BasicLit) string {
-	if tag == nil {
-		return consts.EMPTY_STR
-	}
-
-	return tag.Value
-}
-
-func getType(typeVal ast.Expr, builder *strings.Builder, fieldRes *Field, isMoved bool, basePkg string) error {
-	switch v := typeVal.(type) {
+func getType(expr ast.Expr, builder *strings.Builder, fieldRes *model.Field, isMoved bool, basePkg string) error {
+	switch t := expr.(type) {
 	case *ast.Ident:
-		if isMoved && !slices.Contains(consts.PrimitiveTypes, v.Name) && !strings.Contains(v.Name, ".") {
-			builder.WriteString(basePkg)
-			builder.WriteRune('.')
-		}
-		builder.WriteString(v.Name)
-		return nil
-	case *ast.StarExpr:
-		builder.WriteString("*")
-		if err := getType(v.X, builder, fieldRes, isMoved, basePkg); err != nil {
-			return err
-		}
-	case *ast.ArrayType:
-		builder.WriteString("[]")
-		if err := getType(v.Elt, builder, fieldRes, isMoved, basePkg); err != nil {
-			return err
-		}
-	case *ast.MapType:
-		builder.WriteString("map[")
-		if err := getType(v.Key, builder, fieldRes, isMoved, basePkg); err != nil {
-			return err
-		}
-
-		builder.WriteString("]")
-		if err := getType(v.Value, builder, fieldRes, isMoved, basePkg); err != nil {
-			return err
-		}
+		v := t.Name
+		builder.WriteString(v)
+		fieldRes.Type = v
 	case *ast.SelectorExpr:
-		if err := getType(v.X, builder, fieldRes, false, basePkg); err != nil {
+		x, ok := t.X.(*ast.Ident)
+		if !ok {
+			return common.ErrInvalidStructType
+		}
+		v := x.Name + "." + t.Sel.Name
+		builder.WriteString(v)
+		fieldRes.Type = v
+	case *ast.StarExpr:
+		err := getType(t.X, builder, fieldRes, isMoved, basePkg)
+		if err != nil {
 			return err
 		}
-
-		builder.WriteString(".")
-		if err := getType(v.Sel, builder, fieldRes, false, basePkg); err != nil {
-			return err
-		}
+		builder.WriteString("*")
+		fieldRes.Type = "*" + fieldRes.Type
 	default:
-		log.Println(v)
-		return consts.ErrTypeNotfound
+		log.Println("unsupported type")
+		return common.ErrTypeNotfound
 	}
 
 	return nil
 }
 
 func getName(idents []*ast.Ident, builder *strings.Builder) error {
-	for _, val := range idents {
-		if len(val.Name) == 0 {
-			continue
-		}
-
-		builder.WriteString(string(val.Name))
-		return nil
+	if len(idents) == 0 {
+		return common.ErrNameNotFound
 	}
-
-	return consts.ErrNameNotFound
+	builder.WriteString(idents[0].Name)
+	return nil
 }

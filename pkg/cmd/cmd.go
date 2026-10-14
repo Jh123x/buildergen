@@ -4,7 +4,7 @@ import (
 	"flag"
 	"os"
 
-	"github.com/Jh123x/buildergen/pkg/consts"
+	"github.com/Jh123x/buildergen/pkg/common"
 	"gopkg.in/yaml.v3"
 )
 
@@ -22,7 +22,7 @@ var flagPrinterGen func(PrinterFn) func(f *flag.Flag)
 
 func ParseConfigFile(configFile string) ([]*Config, error) {
 	if len(configFile) == 0 {
-		return nil, consts.ErrInvalidConfigFile
+		return nil, common.ErrInvalidConfigFile
 	}
 
 	data, err := os.ReadFile(configFile)
